@@ -417,6 +417,13 @@ h3 { font-size: 1.5rem; }
   padding: 0 20px 0 40px;
 }
 
+.hero-container {
+  max-width: 1200px;
+  width: 100%;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
 .hero-subtitle {
   font-family: 'League Spartan', sans-serif;
   font-size: 1.1rem;
@@ -530,7 +537,42 @@ h3 { font-size: 1.5rem; }
   font-weight: 900;
   text-transform: uppercase;
   color: var(--dark);
-  margin-bottom: 30px;
+  margin-bottom: 16px;
+  line-height: 1.1;
+}
+
+.seo-blurb {
+  font-family: 'Nunito Sans', sans-serif;
+  font-size: 1rem;
+  font-weight: 400;
+  line-height: 1.7;
+  color: #555;
+  max-width: 680px;
+  margin: 0 auto 30px;
+  text-align: center;
+}
+
+.seo-blurb-light {
+  color: rgba(255, 255, 255, 0.75);
+}
+
+.seo-blurb a {
+  color: #3a7bd5;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  transition: color 0.2s ease;
+}
+
+.seo-blurb a:hover {
+  color: #2d62b3;
+}
+
+.seo-blurb-light a {
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.seo-blurb-light a:hover {
+  color: #ffffff;
 }
 
 .tired-of-grid {
@@ -770,38 +812,39 @@ h3 { font-size: 1.5rem; }
 }
 
 .group-fitness-card {
-  background: linear-gradient(145deg, rgba(255, 255, 255, 0.95), rgba(240, 242, 248, 0.85));
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border: 1px solid rgba(200, 210, 230, 0.5);
+  background: linear-gradient(145deg, #3a7bd5, #1a4fa0);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
   border-radius: 16px;
-  padding: 25px 20px;
+  padding: 30px 24px;
   text-align: center;
-  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1), 0 1px 3px rgba(0, 0, 0, 0.06), inset 0 1px 0 rgba(255, 255, 255, 1);
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  box-shadow: 0 8px 32px rgba(58, 123, 213, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+  transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
 }
 
 .group-fitness-card:hover {
   transform: translateY(-5px);
-  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.15), 0 2px 6px rgba(0, 0, 0, 0.08), inset 0 1px 0 rgba(255, 255, 255, 1);
+  border-color: rgba(255, 255, 255, 0.3);
+  box-shadow: 0 20px 50px rgba(58, 123, 213, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.25);
 }
 
 .group-fitness-icon {
   width: 60px;
   height: 60px;
   border-radius: 50%;
-  background: linear-gradient(135deg, var(--dark), #2a2a3e);
+  background: rgba(255, 255, 255, 0.15);
+  border: 1px solid rgba(255, 255, 255, 0.2);
   display: flex;
   align-items: center;
   justify-content: center;
   margin: 0 auto 20px;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  transition: transform 0.3s ease, background 0.3s ease;
 }
 
 .group-fitness-card:hover .group-fitness-icon {
   transform: translateY(-3px) scale(1.08);
-  box-shadow: 0 8px 25px rgba(58, 123, 213, 0.3);
+  background: rgba(255, 255, 255, 0.25);
 }
 
 .group-fitness-icon i {
@@ -815,7 +858,7 @@ h3 { font-size: 1.5rem; }
   font-weight: 500;
   text-transform: uppercase;
   letter-spacing: 2px;
-  color: #777;
+  color: rgba(255, 255, 255, 0.6);
   margin-bottom: 4px;
 }
 
@@ -825,7 +868,7 @@ h3 { font-size: 1.5rem; }
   font-weight: 800;
   text-transform: uppercase;
   letter-spacing: 1px;
-  color: var(--dark);
+  color: #ffffff;
   margin-bottom: 15px;
 }
 
@@ -833,7 +876,7 @@ h3 { font-size: 1.5rem; }
   font-family: var(--font-body);
   font-size: 14px;
   line-height: 1.7;
-  color: #555;
+  color: rgba(255, 255, 255, 0.8);
 }
 
 .group-fitness-btn {
@@ -1227,13 +1270,17 @@ h3 { font-size: 1.5rem; }
 
 .how-it-works-steps {
   display: flex;
-  align-items: center;
+  align-items: stretch;
   justify-content: center;
   gap: 20px;
 }
 
 .how-it-works-step {
-  flex: 0 1 240px;
+  flex: 1 1 0;
+  max-width: 280px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   text-align: center;
   padding: 25px 20px;
   border-radius: 12px;
@@ -1330,6 +1377,213 @@ h3 { font-size: 1.5rem; }
   background: linear-gradient(135deg, #2d62b3, #1e4d8e);
   transform: translateY(-3px);
   box-shadow: 0 8px 30px rgba(58, 123, 213, 0.5);
+}
+
+/* ===== FAQ ===== */
+.faq {
+  padding: 100px 0;
+  background: linear-gradient(180deg, var(--darker) 0%, #111122 50%, var(--darker) 100%);
+  position: relative;
+  overflow: hidden;
+}
+
+.faq::before {
+  content: '';
+  position: absolute;
+  width: 600px;
+  height: 600px;
+  background: radial-gradient(circle, rgba(58, 123, 213, 0.06) 0%, transparent 70%);
+  top: -200px;
+  right: -200px;
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+.faq::after {
+  content: '';
+  position: absolute;
+  width: 500px;
+  height: 500px;
+  background: radial-gradient(circle, rgba(58, 123, 213, 0.04) 0%, transparent 70%);
+  bottom: -150px;
+  left: -150px;
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+.faq-label {
+  font-family: 'League Spartan', sans-serif;
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 3px;
+  color: #3a7bd5;
+  text-align: center;
+  margin-bottom: 12px;
+}
+
+.faq-heading {
+  font-family: 'League Spartan', sans-serif;
+  font-size: clamp(1.5rem, 3vw, 2.2rem);
+  font-weight: 900;
+  text-transform: uppercase;
+  color: var(--white);
+  text-align: center;
+  margin-bottom: 16px;
+  line-height: 1.15;
+}
+
+.faq-subtext {
+  font-family: var(--font-body);
+  font-size: 1rem;
+  line-height: 1.6;
+  color: rgba(255, 255, 255, 0.45);
+  text-align: center;
+  max-width: 520px;
+  margin: 0 auto 50px;
+}
+
+.faq-list {
+  max-width: 760px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  counter-reset: faq-counter;
+}
+
+.faq-item {
+  counter-increment: faq-counter;
+  background: rgba(255, 255, 255, 0.035);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-radius: 14px;
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  padding: 0;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
+  transition: box-shadow 0.35s ease, border-color 0.35s ease, background 0.35s ease, transform 0.35s ease;
+}
+
+.faq-item:hover {
+  box-shadow: 0 8px 32px rgba(58, 123, 213, 0.1);
+  border-color: rgba(58, 123, 213, 0.2);
+  background: rgba(255, 255, 255, 0.055);
+  transform: translateY(-2px);
+}
+
+.faq-item[open] {
+  border-color: rgba(58, 123, 213, 0.3);
+  box-shadow: 0 8px 32px rgba(58, 123, 213, 0.12), inset 0 1px 0 rgba(58, 123, 213, 0.08);
+  background: rgba(255, 255, 255, 0.055);
+}
+
+.faq-item summary {
+  font-family: 'League Spartan', sans-serif;
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.92);
+  padding: 20px 22px;
+  cursor: pointer;
+  list-style: none;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  transition: color 0.25s ease;
+}
+
+.faq-item summary::-webkit-details-marker {
+  display: none;
+}
+
+.faq-item summary::before {
+  content: counter(faq-counter, decimal-leading-zero);
+  font-family: 'League Spartan', sans-serif;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  color: #3a7bd5;
+  background: rgba(58, 123, 213, 0.08);
+  border: 1px solid rgba(58, 123, 213, 0.15);
+  width: 34px;
+  height: 34px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: background 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+}
+
+.faq-item[open] summary::before {
+  background: #3a7bd5;
+  color: #fff;
+  border-color: #3a7bd5;
+}
+
+.faq-item summary .faq-question-text {
+  flex: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.faq-item summary::after {
+  content: '\f078';
+  font-family: 'Font Awesome 6 Free';
+  font-weight: 900;
+  font-size: 0.6rem;
+  color: rgba(255, 255, 255, 0.25);
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  transition: transform 0.35s ease, color 0.35s ease, background 0.35s ease, border-color 0.35s ease;
+  flex-shrink: 0;
+  margin-left: auto;
+}
+
+.faq-item:hover summary::after {
+  color: #3a7bd5;
+  background: rgba(58, 123, 213, 0.08);
+  border-color: rgba(58, 123, 213, 0.2);
+}
+
+.faq-item[open] summary::after {
+  transform: rotate(180deg);
+  color: #fff;
+  background: #3a7bd5;
+  border-color: #3a7bd5;
+}
+
+.faq-item summary:hover {
+  color: #fff;
+}
+
+.faq-item p {
+  font-family: var(--font-body);
+  font-size: 0.95rem;
+  line-height: 1.75;
+  color: rgba(255, 255, 255, 0.55);
+  padding: 0 22px 22px 72px;
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+  padding-top: 16px;
+  margin-top: -4px;
+}
+
+.faq-cta {
+  text-align: center;
+  margin-top: 50px;
+}
+
+.faq-cta-text {
+  font-family: var(--font-body);
+  font-size: 0.85rem;
+  color: rgba(255, 255, 255, 0.35);
+  margin-top: 14px;
 }
 
 /* ===== GOOGLE REVIEWS CAROUSEL ===== */
@@ -2078,7 +2332,56 @@ h3 { font-size: 1.5rem; }
   }
 
   .hero-subtitle {
-    font-size: 0.85rem;
+    font-size: 0.7rem;
+    letter-spacing: 2px;
+    margin-bottom: 12px;
+  }
+
+  .hero-content h1 {
+    font-size: clamp(2.2rem, 7vw, 3.5rem);
+    line-height: 1.05;
+    margin-bottom: 16px;
+  }
+
+  .hero-tagline {
+    font-size: 1rem;
+    margin-bottom: 20px;
+  }
+
+  /* Section labels – smaller on mobile */
+  .tired-of-label,
+  .group-fitness-label,
+  .programs-label,
+  .how-it-works-label,
+  .reviews-label,
+  .faq-label {
+    font-size: 0.65rem;
+    letter-spacing: 2px;
+    margin-bottom: 6px;
+  }
+
+  /* Section headings – tighter line-height on mobile */
+  .tired-of-heading,
+  .group-fitness-heading,
+  .programs-heading,
+  .how-it-works-heading,
+  .reviews-heading,
+  .faq-heading {
+    line-height: 1.1;
+    margin-bottom: 12px;
+  }
+
+  .tired-of-heading {
+    font-size: clamp(1.4rem, 5vw, 2rem);
+  }
+
+  .programs-heading {
+    font-size: clamp(1.4rem, 5vw, 2rem);
+  }
+
+  .seo-blurb {
+    font-size: 0.9rem;
+    margin-bottom: 20px;
   }
 
   .tired-of-grid {
@@ -2172,7 +2475,7 @@ h3 { font-size: 1.5rem; }
   }
 
   .group-fitness-heading {
-    font-size: 1.8rem;
+    font-size: 1.6rem;
     line-height: 1.1;
   }
 
@@ -2187,18 +2490,75 @@ h3 { font-size: 1.5rem; }
     gap: 20px;
   }
 
+  /* How It Works – center on mobile */
   .how-it-works-step {
     flex: 1;
     padding: 15px 15px;
+    align-items: center;
+    text-align: center;
   }
 
   .how-it-works-steps {
     flex-direction: column;
     gap: 10px;
+    align-items: center;
+  }
+
+  .how-it-works-step h3 {
+    text-align: center;
+  }
+
+  .how-it-works-step p {
+    text-align: center;
   }
 
   .how-it-works-connector {
     display: none;
+  }
+
+  /* FAQ mobile */
+  .faq {
+    padding: 60px 0;
+  }
+
+  .faq-heading {
+    font-size: 1.3rem;
+    padding: 0 10px;
+  }
+
+  .faq-subtext {
+    font-size: 0.85rem;
+    margin-bottom: 30px;
+    padding: 0 10px;
+  }
+
+  .faq-list {
+    gap: 8px;
+  }
+
+  .faq-item summary {
+    font-size: 0.88rem;
+    padding: 16px 14px;
+    gap: 10px;
+  }
+
+  .faq-item summary::before {
+    width: 28px;
+    height: 28px;
+    font-size: 0.65rem;
+    border-radius: 8px;
+  }
+
+  .faq-item summary::after {
+    width: 26px;
+    height: 26px;
+    font-size: 0.5rem;
+  }
+
+  .faq-item p {
+    font-size: 0.85rem;
+    padding: 14px 14px 18px 52px;
+    line-height: 1.65;
   }
 
   .features-grid {
@@ -2242,6 +2602,49 @@ h3 { font-size: 1.5rem; }
 
   .pricing-grid {
     grid-template-columns: 1fr;
+  }
+
+  .tired-of-label,
+  .group-fitness-label,
+  .programs-label,
+  .how-it-works-label,
+  .reviews-label,
+  .faq-label {
+    font-size: 0.6rem;
+    letter-spacing: 1.5px;
+  }
+
+  .tired-of-heading,
+  .group-fitness-heading,
+  .programs-heading,
+  .how-it-works-heading,
+  .reviews-heading {
+    font-size: clamp(1.2rem, 5vw, 1.6rem);
+    line-height: 1.1;
+  }
+
+  .faq-item summary {
+    font-size: 0.82rem;
+    padding: 14px 12px;
+    gap: 8px;
+  }
+
+  .faq-item summary::before {
+    width: 26px;
+    height: 26px;
+    font-size: 0.6rem;
+    border-radius: 7px;
+  }
+
+  .faq-item summary::after {
+    width: 24px;
+    height: 24px;
+    font-size: 0.45rem;
+  }
+
+  .faq-item p {
+    padding: 12px 12px 16px 46px;
+    font-size: 0.82rem;
   }
 }
 
