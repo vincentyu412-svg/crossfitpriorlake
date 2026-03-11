@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="CrossFit Prior Lake members area — view the weekly class schedule.">
+  <title>Members Area | CrossFit Prior Lake</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
+
+  <link rel="preload" href="css/style.css" as="style">
+  <link rel="stylesheet" href="css/style.css">
+
+  <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=League+Spartan:wght@400;500;600;700&family=Open+Sans:wght@400;500;600&display=swap">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=League+Spartan:wght@400;500;600;700&family=Open+Sans:wght@400;500;600&display=swap" media="print" onload="this.media='all'">
+
+  <link rel="preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" media="print" onload="this.media='all'">
+
+  <noscript>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=League+Spartan:wght@400;500;600;700&family=Open+Sans:wght@400;500;600&display=swap">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  </noscript>
+
+  <link rel="icon" type="image/png" sizes="32x32" href="images/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="images/favicon-16x16.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="images/apple-touch-icon.png">
+  <link rel="manifest" href="site.webmanifest">
+  <link rel="canonical" href="https://crossfitpriorlake.com/members-area.html">
+</head>
+<body>
+
+  <div class="members-area">
+    <div class="members-area-header">
+      <a href="index.html" class="members-area-logo"><img src="images/logo.png" alt="CrossFit Prior Lake"></a>
+      <h1 class="members-area-heading">Members Area</h1>
+      <p class="members-area-sub">View this week's class schedule below.</p>
+    </div>
+    <div class="members-area-calendar">
+      <iframe src="https://events.timely.fun/4xw31bei/week?nofilters=1" title="Class Schedule" frameborder="0" allowfullscreen loading="lazy"></iframe>
+    </div>
+    <div class="members-area-footer">
+      <a href="index.html" class="login-return">RETURN BACK TO WEBSITE</a>
+    </div>
+  </div>
+
+  <script>
+    // Require login — redirect to login page if not authenticated
+    if (sessionStorage.getItem('cfpl_auth') !== '1') {
+      window.location.href = 'members.html';
+    }
+  </script>
+
+</body>
+</html>

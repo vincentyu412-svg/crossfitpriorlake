@@ -62,10 +62,12 @@ hamburger.addEventListener('click', () => {
 document.querySelectorAll('.nav-links a').forEach(link => {
   link.addEventListener('click', (e) => {
     const parentDropdown = link.closest('.nav-dropdown');
-    // If this is the top-level dropdown toggle on mobile, toggle submenu instead of navigating
-    if (parentDropdown && link === parentDropdown.querySelector(':scope > a') && window.innerWidth <= 768) {
+    // If this is the top-level dropdown toggle, prevent navigation
+    if (parentDropdown && link === parentDropdown.querySelector(':scope > a')) {
       e.preventDefault();
-      parentDropdown.classList.toggle('open');
+      if (window.innerWidth <= 768) {
+        parentDropdown.classList.toggle('open');
+      }
       return;
     }
     hamburger.classList.remove('active');
@@ -418,3 +420,69 @@ document.querySelectorAll('a[href^="#"]').forEach(anchor => {
     }
   });
 });
+
+// ===== POPUP / MODAL =====
+(function() {
+  const overlay = document.getElementById('popupOverlay');
+  const closeBtn = document.getElementById('popupClose');
+  const form = document.getElementById('popupForm');
+  if (!overlay) return;
+
+  function openPopup(e) {
+    if (e) e.preventDefault();
+    overlay.classList.add('active');
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closePopup() {
+    overlay.classList.remove('active');
+    document.body.style.overflow = '';
+  }
+
+  // Close on X button
+  if (closeBtn) closeBtn.addEventListener('click', closePopup);
+
+  // Close on overlay click (outside modal)
+  overlay.addEventListener('click', function(e) {
+    if (e.target === overlay) closePopup();
+  });
+
+  // Close on Escape key
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape' && overlay.classList.contains('active')) closePopup();
+  });
+
+  // Wire all CTA buttons that link to contact.html
+  document.querySelectorAll('a[href="contact.html"]').forEach(function(link) {
+    // Skip the plain "Contact" nav link (not a button)
+    if (!link.classList.contains('btn') && !link.classList.contains('mobile-sticky-btn') && !link.classList.contains('active')) return;
+    link.addEventListener('click', openPopup);
+  });
+
+  // Also wire mobile sticky buttons that link to contact.html
+  document.querySelectorAll('.mobile-sticky-schedule, .mobile-sticky-free').forEach(function(btn) {
+    btn.addEventListener('click', openPopup);
+  });
+
+  // Phone number auto-format: (xxx) xxx-xxxx
+  var phoneInput = form ? form.querySelector('input[name="phone"]') : null;
+  if (phoneInput) {
+    phoneInput.addEventListener('input', function() {
+      var digits = this.value.replace(/\D/g, '');
+      if (digits.charAt(0) === '1' && digits.length > 10) { digits = digits.substring(1); }
+      digits = digits.substring(0, 10);
+      if (digits.length === 0) { this.value = ''; return; }
+      if (digits.length <= 3) { this.value = '(' + digits; }
+      else if (digits.length <= 6) { this.value = '(' + digits.substring(0, 3) + ') ' + digits.substring(3); }
+      else { this.value = '(' + digits.substring(0, 3) + ') ' + digits.substring(3, 6) + '-' + digits.substring(6); }
+    });
+  }
+
+  // Form submission
+  if (form) {
+    form.addEventListener('submit', function(e) {
+      e.preventDefault();
+      window.location.href = 'schedule.html';
+    });
+  }
+})();

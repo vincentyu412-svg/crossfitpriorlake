@@ -1,0 +1,3 @@
+
+/* ===== POPUP BADGE & TRUST ===== */
+.popup-badge{display:inline-flex;align-items:center;gap:6px;background:linear-gradient(135deg,#ff6b35,#e74c3c);color:#fff;font-family:'League Spartan',sans-serif;font-size:.75rem;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;padding:6px 14px;border-radius:50px;margin:0 auto 16px;width:fit-content}.popup-badge i{font-size:.7rem}.popup-trust{display:flex;justify-content:center;gap:20px;margin-top:16px;padding-top:16px;border-top:1px solid #eee}.popup-trust span{display:flex;align-items:center;gap:5px;font-family:'Open Sans',sans-serif;font-size:.75rem;color:#999}.popup-trust i{font-size:.65rem;color:#bbb}.popup-heading{margin-top:0}.popup-sub{font-size:.9rem;line-height:1.6}

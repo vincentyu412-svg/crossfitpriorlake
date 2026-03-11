@@ -6,7 +6,6 @@ A modern, responsive website for CrossFit Prior Lake gym.
 
 - **Home** (`index.html`) – Hero section, features, about preview, programs, testimonials, CTA
 - **About** (`about.html`) – Gym story, mission/values, coach bios
-- **Classes** (`classes.html`) – Program descriptions and weekly schedule
 - **Membership** (`membership.html`) – Pricing plans, add-ons, FAQ
 - **Contact** (`contact.html`) – Contact form, info, and map placeholder
 
@@ -16,7 +15,8 @@ A modern, responsive website for CrossFit Prior Lake gym.
 crossfitpriorlake/
 ├── index.html
 ├── about.html
-├── classes.html
+├── group-training.html
+├── personal-training.html
 ├── membership.html
 ├── contact.html
 ├── css/

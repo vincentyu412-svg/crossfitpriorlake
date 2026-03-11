@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Members login — access the CrossFit Prior Lake members-only area.">
+  <title>Members Login | CrossFit Prior Lake</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
+
+  <link rel="preload" href="css/style.css" as="style">
+  <link rel="stylesheet" href="css/style.css">
+
+  <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=League+Spartan:wght@400;500;600;700&family=Open+Sans:wght@400;500;600&display=swap">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=League+Spartan:wght@400;500;600;700&family=Open+Sans:wght@400;500;600&display=swap" media="print" onload="this.media='all'">
+
+  <link rel="preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" media="print" onload="this.media='all'">
+
+  <noscript>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=League+Spartan:wght@400;500;600;700&family=Open+Sans:wght@400;500;600&display=swap">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  </noscript>
+
+  <link rel="icon" type="image/png" sizes="32x32" href="images/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="images/favicon-16x16.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="images/apple-touch-icon.png">
+  <link rel="manifest" href="site.webmanifest">
+  <link rel="canonical" href="https://crossfitpriorlake.com/members.html">
+</head>
+<body>
+
+  <div class="login-page">
+    <div class="login-logo">
+      <img src="images/logo.png" alt="CrossFit Prior Lake">
+    </div>
+    <div class="login-card">
+      <h1 class="login-heading">Welcome back</h1>
+      <p class="login-sub">Please login with the master password to access the members-only area.</p>
+      <form class="login-form" id="loginForm">
+        <input type="password" id="loginPassword" placeholder="Enter Password" required autocomplete="current-password">
+        <p class="login-error" id="loginError">Incorrect password. Please try again.</p>
+        <button type="submit" class="login-btn">LOGIN NOW</button>
+      </form>
+      <p class="login-hint">LOGIN USING THE MASTER PASSWORD.</p>
+    </div>
+    <a href="index.html" class="login-return">RETURN BACK TO WEBSITE</a>
+  </div>
+
+  <script>
+    (function() {
+      var form = document.getElementById('loginForm');
+      var pw = document.getElementById('loginPassword');
+      var err = document.getElementById('loginError');
+
+      form.addEventListener('submit', function(e) {
+        e.preventDefault();
+        var val = pw.value.trim().toLowerCase();
+        if (val === 'crossfitpriorlake') {
+          sessionStorage.setItem('cfpl_auth', '1');
+          window.location.href = 'members-area.html';
+        } else {
+          err.style.display = 'block';
+          pw.value = '';
+          pw.focus();
+        }
+      });
+    })();
+  </script>
+
+</body>
+</html>
