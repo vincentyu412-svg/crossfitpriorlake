@@ -1,0 +1,6 @@
+# Canonical URL redirects — prevent duplicate content
+# Cloudflare Pages automatically enforces HTTPS
+
+# Redirect /index.html to root (prevent duplicate homepage)
+/index.html / 301
+

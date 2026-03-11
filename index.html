@@ -3,18 +3,31 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="CrossFit Prior Lake – the #1 rated CrossFit gym in Prior Lake, MN. Group classes, personal training & nutrition coaching. Book your free class today!">
+  <meta name="description" content="CrossFit Prior Lake is the #1 rated CrossFit gym in Prior Lake, MN. Expert-coached group classes, personal training & nutrition coaching for all fitness levels. Book your free class today!">
   <title>CrossFit Prior Lake | #1 CrossFit Gym in Prior Lake, MN</title>
 
-  <!-- Google Fonts -->
+  <!-- Preconnect to external origins -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=League+Spartan:wght@400;500;600;700&family=Nunito+Sans:wght@400;500;600;700&family=Oswald:wght@400;500;600;700&family=Open+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
 
-  <!-- Font Awesome Icons -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-
-  <!-- Stylesheet -->
+  <!-- Critical CSS -->
+  <link rel="preload" href="css/style.css" as="style">
   <link rel="stylesheet" href="css/style.css">
+
+  <!-- Google Fonts (non-render-blocking) -->
+  <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=League+Spartan:wght@400;500;600;700&family=Nunito+Sans:wght@400;500;600;700&family=Oswald:wght@400;500;600;700&family=Open+Sans:wght@400;500;600&display=swap">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=League+Spartan:wght@400;500;600;700&family=Nunito+Sans:wght@400;500;600;700&family=Oswald:wght@400;500;600;700&family=Open+Sans:wght@400;500;600&display=swap" media="print" onload="this.media='all'">
+
+  <!-- Font Awesome (non-render-blocking) -->
+  <link rel="preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" media="print" onload="this.media='all'">
+
+  <!-- Fallback for no-JS -->
+  <noscript>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=League+Spartan:wght@400;500;600;700&family=Nunito+Sans:wght@400;500;600;700&family=Oswald:wght@400;500;600;700&family=Open+Sans:wght@400;500;600&display=swap">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  </noscript>
 
   <!-- Favicon -->
   <link rel="icon" type="image/png" sizes="32x32" href="images/favicon-32x32.png">
@@ -29,7 +42,7 @@
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://crossfitpriorlake.com/">
   <meta property="og:title" content="CrossFit Prior Lake | #1 CrossFit Gym in Prior Lake, MN">
-  <meta property="og:description" content="CrossFit Prior Lake – the #1 rated CrossFit gym in Prior Lake, MN. Group classes, personal training & nutrition coaching. Book your free class today!">
+  <meta property="og:description" content="CrossFit Prior Lake is the #1 rated CrossFit gym in Prior Lake, MN. Expert-coached group classes, personal training & nutrition coaching for all fitness levels. Book your free class today!">
   <meta property="og:image" content="https://crossfitpriorlake.com/images/Personal%20Training.jpeg">
   <meta property="og:locale" content="en_US">
   <meta property="og:site_name" content="CrossFit Prior Lake">
@@ -37,7 +50,7 @@
   <!-- Twitter Card -->
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="CrossFit Prior Lake | #1 CrossFit Gym in Prior Lake, MN">
-  <meta name="twitter:description" content="CrossFit Prior Lake – the #1 rated CrossFit gym in Prior Lake, MN. Group classes, personal training & nutrition coaching. Book your free class today!">
+  <meta name="twitter:description" content="CrossFit Prior Lake is the #1 rated CrossFit gym in Prior Lake, MN. Expert-coached group classes, personal training & nutrition coaching for all fitness levels. Book your free class today!">
   <meta name="twitter:image" content="https://crossfitpriorlake.com/images/Personal%20Training.jpeg">
 
   <!-- Structured Data -->
@@ -47,7 +60,7 @@
     "@type": "LocalBusiness",
     "@id": "https://crossfitpriorlake.com",
     "name": "CrossFit Prior Lake",
-    "description": "CrossFit Prior Lake – the #1 rated CrossFit gym in Prior Lake, MN. Group classes, personal training & nutrition coaching. Book your free class today!",
+    "description": "CrossFit Prior Lake is the #1 rated CrossFit gym in Prior Lake, MN. Expert-coached group classes, personal training & nutrition coaching for all fitness levels. Book your free class today!",
     "url": "https://crossfitpriorlake.com",
     "telephone": "+1-952-234-6444",
     "address": {
@@ -448,6 +461,6 @@
     </div>
   </footer>
 
-  <script src="js/main.js"></script>
+  <script src="js/main.js" defer></script>
 </body>
 </html>
