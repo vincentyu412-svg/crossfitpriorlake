@@ -7,24 +7,29 @@
   <title>Classes &amp; Schedule | CrossFit Prior Lake</title>
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=Open+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=League+Spartan:wght@400;500;600;700&family=Nunito+Sans:wght@400;500;600;700&family=Oswald:wght@400;500;600;700&family=Open+Sans:wght@400;500;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
   <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
 
   <!-- ===== NAVIGATION ===== -->
-  <nav class="navbar scrolled">
+  <nav class="navbar">
     <div class="container">
-      <a href="index.html" class="logo">CrossFit <span>Prior Lake</span></a>
+      <a href="index.html" class="logo"><img src="images/logo.png" alt="CrossFit Prior Lake"></a>
       <ul class="nav-links">
         <li><a href="index.html">Home</a></li>
-        <li><a href="about.html">About</a></li>
-        <li><a href="classes.html">Classes</a></li>
-        <li><a href="membership.html">Membership</a></li>
+        <li class="nav-dropdown">
+          <a href="classes.html" class="active">Programs <i class="fas fa-chevron-down nav-dropdown-arrow"></i></a>
+          <ul class="dropdown-menu">
+            <li><a href="group-training.html">Group Training (CrossFit)</a></li>
+            <li><a href="personal-training.html">Personal Training</a></li>
+          </ul>
+        </li>
+        <li><a href="about.html">About Us</a></li>
         <li><a href="contact.html">Contact</a></li>
-        <li><a href="contact.html" class="btn btn-primary">Join Now</a></li>
       </ul>
+      <a href="contact.html" class="btn btn-nav-cta"><i class="fas fa-chevron-right"></i> Get Started</a>
       <div class="hamburger">
         <span></span>
         <span></span>
@@ -246,6 +251,22 @@
       <a href="contact.html" class="btn">Get Started Free</a>
     </div>
   </section>
+
+  <!-- ===== MOBILE STICKY CTA BAR ===== -->
+  <div class="mobile-sticky-bar" id="mobileStickyBar">
+    <a href="membership.html" class="mobile-sticky-btn mobile-sticky-members">
+      <i class="fas fa-user"></i>
+      <span>Members</span>
+    </a>
+    <a href="contact.html" class="mobile-sticky-btn mobile-sticky-schedule">
+      <i class="fas fa-calendar-alt"></i>
+      <span>Schedule</span>
+    </a>
+    <a href="contact.html" class="mobile-sticky-btn mobile-sticky-free">
+      <i class="fas fa-award"></i>
+      <span>Free Session</span>
+    </a>
+  </div>
 
   <!-- ===== FOOTER ===== -->
   <footer class="footer">
