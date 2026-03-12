@@ -489,6 +489,7 @@ document.querySelectorAll('a[href^="#"]').forEach(anchor => {
 
       var data = {
         firstName: (form.querySelector('input[name="firstName"]') || {}).value || '',
+        lastName: (form.querySelector('input[name="lastName"]') || {}).value || '',
         email: (form.querySelector('input[name="email"]') || {}).value || '',
         phone: (form.querySelector('input[name="phone"]') || {}).value || '',
         source: window.location.pathname
