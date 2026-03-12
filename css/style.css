@@ -558,7 +558,7 @@ h3 { font-size: 1.5rem; }
   position: relative;
   padding-top: 180px;
   padding-bottom: 140px;
-  background: linear-gradient(to right, rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.5)), url('../images/background.jpeg') center/cover no-repeat fixed;
+  background: linear-gradient(to right, rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.5)), url('../images/background.webp') center/cover no-repeat fixed;
 }
 
 .hero-mountain {
@@ -705,7 +705,7 @@ h3 { font-size: 1.5rem; }
   position: relative;
   margin-top: -1px;
   padding: 100px 0 120px;
-  background: linear-gradient(to right, rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.4)), url('../images/PERFECT%20PROGRAM.jpeg') center/cover no-repeat;
+  background: linear-gradient(to right, rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.4)), url('../images/PERFECT%20PROGRAM.webp') center/cover no-repeat;
   text-align: center;
 }
 
@@ -1646,7 +1646,7 @@ h3 { font-size: 1.5rem; }
 .page-hero {
   padding: 160px 0 80px;
   text-align: center;
-  background: linear-gradient(135deg, rgba(15, 15, 26, 0.95), rgba(26, 26, 46, 0.9)), url('../images/hero-bg.jpg') center/cover no-repeat;
+  background: linear-gradient(135deg, rgba(15, 15, 26, 0.95), rgba(26, 26, 46, 0.9)), url('../images/hero-bg.webp') center/cover no-repeat;
 }
 
 .page-hero h1 {
