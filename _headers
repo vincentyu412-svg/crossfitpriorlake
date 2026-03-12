@@ -2,13 +2,13 @@
 /images/*
   Cache-Control: public, max-age=31536000, immutable
 
-# Cache CSS for 1 year (file is versioned/minified)
+# Cache CSS — revalidate on each visit
 /css/*
-  Cache-Control: public, max-age=31536000, immutable
+  Cache-Control: public, max-age=0, must-revalidate
 
-# Cache JS for 1 year
+# Cache JS — revalidate on each visit
 /js/*
-  Cache-Control: public, max-age=31536000, immutable
+  Cache-Control: public, max-age=0, must-revalidate
 
 # Cache favicons and manifest
 /site.webmanifest
