@@ -482,7 +482,28 @@ document.querySelectorAll('a[href^="#"]').forEach(anchor => {
   if (form) {
     form.addEventListener('submit', function(e) {
       e.preventDefault();
-      window.location.href = 'schedule.html';
+      var btn = form.querySelector('.popup-submit');
+      var originalText = btn.innerHTML;
+      btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Sending...';
+      btn.disabled = true;
+
+      var data = {
+        firstName: (form.querySelector('input[name="firstName"]') || {}).value || '',
+        email: (form.querySelector('input[name="email"]') || {}).value || '',
+        phone: (form.querySelector('input[name="phone"]') || {}).value || '',
+        source: window.location.pathname
+      };
+
+      fetch('https://services.leadconnectorhq.com/hooks/QU0KfW1QodK79UH6fB31/webhook-trigger/wRUCSolpWZIqgTKyMX0G', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        mode: 'no-cors',
+        body: JSON.stringify(data)
+      }).then(function() {
+        window.location.href = 'schedule.html';
+      }).catch(function() {
+        window.location.href = 'schedule.html';
+      });
     });
   }
 })();
