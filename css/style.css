@@ -2629,10 +2629,11 @@ h3 { font-size: 1.5rem; }
 @media (max-width: 768px) {
   h1 { font-size: 2.4rem; }
 
+  .hero { min-height: 90vh; padding-top: 140px; padding-bottom: 100px; }
   .hero-content { padding: 0 20px; }
-  .hero-subtitle { font-size: .7rem; letter-spacing: 2px; margin-bottom: 12px; }
-  .hero-content h1 { font-size: clamp(2.2rem, 7vw, 3.5rem); line-height: 1.05; margin-bottom: 16px; }
-  .hero-tagline { font-size: 1rem; margin-bottom: 20px; }
+  .hero-subtitle { font-size: .85rem; letter-spacing: 2.5px; margin-bottom: 14px; text-shadow: 0 1px 3px rgba(0,0,0,0.4); }
+  .hero-content h1 { font-size: clamp(2.8rem, 9vw, 4rem); line-height: 1.08; margin-bottom: 20px; text-shadow: 0 2px 8px rgba(0,0,0,0.35); }
+  .hero-tagline { font-size: 1.1rem; line-height: 1.5; margin-bottom: 24px; text-shadow: 0 1px 3px rgba(0,0,0,0.3); }
 
   .tired-of-label,
   .group-fitness-label,
@@ -2800,6 +2801,11 @@ h3 { font-size: 1.5rem; }
 @media (max-width: 480px) {
   h1 { font-size: 2rem; }
   h2 { font-size: 1.5rem; }
+
+  .hero { min-height: 92vh; padding-top: 120px; }
+  .hero-subtitle { font-size: .78rem; letter-spacing: 2px; }
+  .hero-content h1 { font-size: clamp(2.4rem, 10vw, 3.2rem); }
+  .hero-tagline { font-size: 1.05rem; }
 
   .pricing-grid { grid-template-columns: 1fr; }
 
