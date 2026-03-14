@@ -40,6 +40,40 @@
       <p class="members-area-sub">View this week's class schedule below.</p>
     </div>
 
+    <!-- Refer a Friend Banner -->
+    <div class="refer-banner" onclick="document.getElementById('referModal').classList.add('is-open')">
+      <div class="refer-banner-glow"></div>
+      <div class="refer-banner-content">
+        <div class="refer-banner-icon"><i class="fas fa-gift"></i></div>
+        <div class="refer-banner-text">
+          <h2>Refer a Friend — Get a Free Month</h2>
+        </div>
+        <div class="refer-banner-arrow"><i class="fas fa-arrow-right"></i></div>
+      </div>
+    </div>
+
+    <!-- Refer a Member Modal -->
+    <div class="refer-modal-overlay" id="referModal" onclick="if(event.target===this)this.classList.remove('is-open')">
+      <div class="refer-modal">
+        <button class="refer-modal-close" onclick="document.getElementById('referModal').classList.remove('is-open')" aria-label="Close"><i class="fas fa-xmark"></i></button>
+        <h2><i class="fas fa-gift"></i> Refer a Member</h2>
+        <p>Know someone who'd love CrossFit Prior Lake? Refer them and they'll get a <strong>free 3-day VIP pass</strong>. When they sign up, <strong>you get a free month</strong>!</p>
+        <form class="refer-form" onsubmit="submitReferral(event)">
+          <div class="refer-section-label"><i class="fas fa-user"></i> Your Info</div>
+          <div class="refer-name-row">
+            <label>First Name<input type="text" name="referrer_first_name" required></label>
+            <label>Last Name<input type="text" name="referrer_last_name" required></label>
+          </div>
+          <div class="refer-section-label"><i class="fas fa-user-plus"></i> Friend's Info</div>
+          <label>First Name<input type="text" name="friend_first_name" required></label>
+          <label>Phone<input type="tel" name="friend_phone" required></label>
+          <label>Email <span class="refer-optional">(optional)</span><input type="email" name="friend_email"></label>
+          <button type="submit" class="refer-form-submit"><i class="fas fa-paper-plane"></i> Send Referral</button>
+          <div class="refer-form-status" style="display:none; text-align:center; font-size:0.85rem; font-weight:600;"></div>
+        </form>
+      </div>
+    </div>
+
     <!-- Nutrition Kickstart Banner -->
     <a href="nutrition.html" class="nk-banner">
       <div class="nk-banner-glow"></div>
@@ -68,6 +102,44 @@
     // Require login — redirect to login page if not authenticated
     if (sessionStorage.getItem('cfpl_auth') !== '1') {
       window.location.href = 'members.html';
+    }
+
+    async function submitReferral(e) {
+      e.preventDefault();
+      var form = e.target;
+      var btn = form.querySelector('.refer-form-submit');
+      var status = form.querySelector('.refer-form-status');
+      var data = {
+        referrer_first_name: form.referrer_first_name.value.trim(),
+        referrer_last_name: form.referrer_last_name.value.trim(),
+        friend_first_name: form.friend_first_name.value.trim(),
+        friend_phone: form.friend_phone.value.trim(),
+        friend_email: form.friend_email.value.trim()
+      };
+
+      btn.disabled = true;
+      btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Sending...';
+      status.style.display = 'none';
+
+      try {
+        var res = await fetch('https://services.leadconnectorhq.com/hooks/QU0KfW1QodK79UH6fB31/webhook-trigger/f7ddec81-7a40-4352-9c2e-4630d4f50f0f', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(data)
+        });
+        if (!res.ok) throw new Error('Request failed');
+        status.style.display = 'block';
+        status.style.color = '#16a34a';
+        status.textContent = 'Referral sent! Thanks for spreading the word.';
+        form.reset();
+      } catch (err) {
+        status.style.display = 'block';
+        status.style.color = '#dc2626';
+        status.textContent = 'Something went wrong. Please try again.';
+      } finally {
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fas fa-paper-plane"></i> Send Referral';
+      }
     }
   </script>
 

@@ -2237,6 +2237,262 @@ h3 { font-size: 1.5rem; }
   margin-bottom: 32px;
 }
 
+/* Refer a Friend Banner */
+.refer-banner {
+  display: block;
+  width: 100%;
+  max-width: 1100px;
+  margin: 0 0 10px;
+  padding: 10px 20px;
+  border-radius: 10px;
+  background: linear-gradient(135deg, #92400e 0%, #d97706 50%, #f59e0b 100%);
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.refer-banner:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 40px rgba(245, 158, 11, 0.3);
+}
+
+.refer-banner-glow {
+  position: absolute;
+  top: -50%;
+  right: -20%;
+  width: 300px;
+  height: 300px;
+  background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+.refer-banner-content {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  position: relative;
+  z-index: 1;
+}
+
+.refer-banner-icon {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.9rem;
+  color: #fff;
+  flex-shrink: 0;
+}
+
+.refer-banner-text {
+  flex: 1;
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+}
+
+.refer-banner-text h2 {
+  font-family: var(--font-display);
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: #fff;
+  margin: 0;
+  white-space: nowrap;
+}
+
+.refer-banner-text p {
+  font-family: var(--font-body);
+  font-size: 0.78rem;
+  color: rgba(255, 255, 255, 0.8);
+  margin: 0;
+  white-space: nowrap;
+}
+
+.refer-banner-arrow {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.15);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-size: 0.7rem;
+  flex-shrink: 0;
+  transition: transform 0.2s ease, background 0.2s ease;
+}
+
+.refer-banner:hover .refer-banner-arrow {
+  background: rgba(255, 255, 255, 0.25);
+  transform: translateX(3px);
+}
+
+/* Refer Modal */
+.refer-modal-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 9999;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.refer-modal-overlay.is-open {
+  display: flex;
+}
+
+.refer-modal {
+  background: #fff;
+  border-radius: 16px;
+  padding: 32px;
+  max-width: 440px;
+  width: 100%;
+  position: relative;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+  animation: referModalIn 0.25s ease;
+}
+
+@keyframes referModalIn {
+  from { opacity: 0; transform: scale(0.95) translateY(10px); }
+  to { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+.refer-modal-close {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: none;
+  background: #f0f0f0;
+  color: #555;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.9rem;
+  transition: background 0.2s ease;
+}
+
+.refer-modal-close:hover {
+  background: #e0e0e0;
+}
+
+.refer-modal h2 {
+  font-family: var(--font-display);
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: var(--dark);
+  margin: 0 0 8px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.refer-modal h2 i {
+  color: var(--blue);
+}
+
+.refer-modal > p {
+  font-family: var(--font-body);
+  font-size: 0.88rem;
+  color: #666;
+  line-height: 1.5;
+  margin: 0 0 20px;
+}
+
+.refer-form {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.refer-name-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+
+.refer-section-label {
+  font-family: var(--font-display);
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--blue);
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  padding-bottom: 4px;
+  border-bottom: 2px solid rgba(58, 123, 213, 0.15);
+  margin-top: 6px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.refer-section-label i {
+  font-size: 0.68rem;
+}
+
+.refer-form label {
+  font-family: var(--font-display);
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--dark);
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.refer-optional {
+  font-weight: 400;
+  color: #999;
+  font-size: 0.72rem;
+}
+
+.refer-form input {
+  padding: 10px 12px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  font-family: var(--font-body);
+  font-size: 0.88rem;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.refer-form input:focus {
+  outline: none;
+  border-color: var(--blue);
+  box-shadow: 0 0 0 3px rgba(58, 123, 213, 0.12);
+}
+
+.refer-form-submit {
+  padding: 12px;
+  background: linear-gradient(135deg, var(--blue) 0%, var(--blue-dark) 100%);
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  font-family: var(--font-display);
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  margin-top: 4px;
+}
+
+.refer-form-submit:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 16px rgba(58, 123, 213, 0.4);
+}
+
 .members-area-logo {
   display: inline-block;
   margin-bottom: 24px;
@@ -2291,9 +2547,9 @@ h3 { font-size: 1.5rem; }
   display: block;
   width: 100%;
   max-width: 1100px;
-  margin: 0 0 32px;
-  padding: 24px 32px;
-  border-radius: 16px;
+  margin: 0 0 24px;
+  padding: 10px 20px;
+  border-radius: 10px;
   background: linear-gradient(135deg, #1a1a2e 0%, #2d62b3 100%);
   cursor: pointer;
   position: relative;
@@ -2320,53 +2576,58 @@ h3 { font-size: 1.5rem; }
 .nk-banner-content {
   display: flex;
   align-items: center;
-  gap: 20px;
+  gap: 12px;
   position: relative;
   z-index: 1;
 }
 
 .nk-banner-icon {
-  width: 52px;
-  height: 52px;
-  border-radius: 14px;
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
   background: rgba(255, 255, 255, 0.15);
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 1.4rem;
+  font-size: 0.9rem;
   color: #6ee7a0;
   flex-shrink: 0;
 }
 
 .nk-banner-text {
   flex: 1;
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
 }
 
 .nk-banner-text h2 {
   font-family: var(--font-display);
-  font-size: 1.35rem;
+  font-size: 0.88rem;
   font-weight: 700;
   color: #fff;
-  margin: 0 0 4px;
+  margin: 0;
+  white-space: nowrap;
 }
 
 .nk-banner-text p {
   font-family: var(--font-body);
-  font-size: 0.88rem;
+  font-size: 0.78rem;
   color: rgba(255, 255, 255, 0.7);
   margin: 0;
+  white-space: nowrap;
 }
 
 .nk-banner-arrow {
-  width: 36px;
-  height: 36px;
+  width: 28px;
+  height: 28px;
   border-radius: 50%;
   background: rgba(255, 255, 255, 0.1);
   display: flex;
   align-items: center;
   justify-content: center;
   color: #fff;
-  font-size: 0.85rem;
+  font-size: 0.7rem;
   flex-shrink: 0;
   transition: transform 0.2s ease, background 0.2s ease;
 }
@@ -2593,7 +2854,7 @@ h3 { font-size: 1.5rem; }
   display: grid;
   grid-template-columns: 1fr auto 1fr;
   gap: 0;
-  align-items: stretch;
+  align-items: start;
   position: relative;
 }
 
@@ -2608,6 +2869,7 @@ h3 { font-size: 1.5rem; }
   justify-content: center;
   width: 56px;
   position: relative;
+  align-self: stretch;
 }
 
 .nutrition-paired-connector i {
@@ -2642,11 +2904,12 @@ h3 { font-size: 1.5rem; }
 .nutrition-card-videos {
   text-align: left;
   align-items: flex-start;
+  padding: 16px;
 }
 
 .nutrition-card-videos .nutrition-videos-grid {
   width: 100%;
-  margin-top: 8px;
+  margin-top: 4px;
 }
 
 .nutrition-card-videos .nutrition-video-placeholder {
@@ -2655,6 +2918,66 @@ h3 { font-size: 1.5rem; }
   padding: 24px 16px;
   border-radius: 10px;
   border: 1px dashed rgba(58, 123, 213, 0.15);
+}
+
+/* Video Category Accordions */
+.nutrition-video-category {
+  width: 100%;
+  margin-top: 6px;
+}
+
+.nutrition-video-category summary {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 16px;
+  background: linear-gradient(135deg, #f0f4f8 0%, #e4ebf5 100%);
+  border-radius: 10px;
+  border-left: 4px solid var(--blue);
+  font-family: var(--font-display);
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--dark);
+  cursor: pointer;
+  list-style: none;
+  transition: background 0.2s ease, box-shadow 0.2s ease;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.04);
+}
+
+.nutrition-video-category summary::-webkit-details-marker {
+  display: none;
+}
+
+.nutrition-video-category summary::after {
+  content: '\f078';
+  font-family: 'Font Awesome 6 Free';
+  font-weight: 900;
+  font-size: 0.7rem;
+  margin-left: auto;
+  color: var(--blue);
+  transition: transform 0.2s ease;
+}
+
+.nutrition-video-category[open] summary::after {
+  transform: rotate(180deg);
+}
+
+.nutrition-video-category summary:hover {
+  background: linear-gradient(135deg, #e4ebf5 0%, #d9e3f0 100%);
+  box-shadow: 0 2px 8px rgba(58, 123, 213, 0.12);
+}
+
+.nutrition-video-category summary i {
+  color: var(--blue);
+  width: 20px;
+  font-size: 1rem;
+  text-align: center;
+}
+
+.nutrition-video-category .nutrition-videos-grid {
+  margin-top: 4px;
+  margin-bottom: 2px;
+  padding: 0 4px;
 }
 
 /* Inline icons in card headings */
@@ -2854,40 +3177,139 @@ h3 { font-size: 1.5rem; }
 }
 
 .nutrition-videos-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
 }
 
 .nutrition-video-item {
+  display: flex;
+  align-items: center;
+  padding: 4px 10px;
+  cursor: pointer;
+  border-radius: 0;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.04);
+  transition: all 0.15s ease;
+}
+
+.nutrition-video-item::after {
+  content: '\f054';
+  font-family: 'Font Awesome 6 Free';
+  font-weight: 900;
+  font-size: 0.5rem;
+  color: rgba(58, 123, 213, 0.35);
+  margin-left: auto;
+  padding-left: 8px;
+  transition: color 0.15s ease, transform 0.15s ease;
+}
+
+.nutrition-video-item:hover::after {
+  color: var(--blue);
+  transform: translateX(2px);
+}
+
+.nutrition-video-item:last-child {
+  border-bottom: none;
+}
+
+.nutrition-video-item:hover {
+  background: rgba(58, 123, 213, 0.05);
+}
+
+.nutrition-video-item.is-playing {
+  flex-direction: column;
+  align-items: stretch;
+  padding: 0;
   background: #fff;
-  border-radius: 12px;
+  border-radius: 8px;
+  border-bottom: none;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
   overflow: hidden;
-  box-shadow: 0 2px 20px rgba(0, 0, 0, 0.08);
+  margin: 6px 0;
+}
+
+.nutrition-video-item.is-playing::after {
+  display: none;
+}
+
+.nutrition-video-close {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.6);
+  color: #fff;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.75rem;
+  z-index: 10;
+  transition: background 0.2s ease;
+}
+
+.nutrition-video-close:hover {
+  background: rgba(0, 0, 0, 0.85);
+}
+
+.nutrition-video-thumb-mini {
+  display: none;
+}
+
+.nutrition-video-item:hover .nutrition-video-thumb-mini,
+.nutrition-video-item.is-playing .nutrition-video-thumb-mini {
+  display: none;
+}
+
+.nutrition-video-thumb-mini i {
+  display: none;
 }
 
 .nutrition-video-wrap {
   position: relative;
   width: 100%;
   padding-bottom: 56.25%;
+  border-radius: 8px 8px 0 0;
+  overflow: hidden;
 }
 
-.nutrition-video-wrap iframe {
+.nutrition-video-wrap video {
   position: absolute;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
   border: none;
+  object-fit: cover;
+}
+
+.nutrition-video-wrap iframe,
+.nutrition-video-wrap video {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border: none;
+  border-radius: 8px 8px 0 0;
+  object-fit: cover;
 }
 
 .nutrition-video-label {
   font-family: var(--font-display);
-  font-size: 0.9rem;
-  font-weight: 600;
+  font-size: 0.65rem;
+  font-weight: 500;
   color: var(--dark);
-  padding: 12px 16px;
   margin: 0;
+  flex: 1;
+}
+
+.is-playing .nutrition-video-label {
+  padding: 6px 10px;
+  font-size: 0.75rem;
 }
 
 .nutrition-video-placeholder {
@@ -2910,6 +3332,222 @@ h3 { font-size: 1.5rem; }
   font-family: var(--font-body);
   font-size: 0.95rem;
   margin: 0;
+}
+
+/* Section Connector (Meal Plans → Progression) */
+.nutrition-section-connector {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 8px 0;
+}
+
+.nutrition-section-connector-line {
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(58, 123, 213, 0.2), transparent);
+}
+
+.nutrition-section-connector-badge {
+  font-family: var(--font-display);
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--blue);
+  background: rgba(58, 123, 213, 0.06);
+  border: 1px solid rgba(58, 123, 213, 0.12);
+  border-radius: 20px;
+  padding: 6px 16px;
+  white-space: nowrap;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.nutrition-section-connector-badge i {
+  font-size: 0.7rem;
+  animation: connectorBounce 2s ease-in-out infinite;
+}
+
+@keyframes connectorBounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(3px); }
+}
+
+/* 4-Week Progression Card */
+.nutrition-progression {
+  background: #fff;
+  border-radius: 14px;
+  padding: 28px;
+  box-shadow: 0 2px 16px rgba(0, 0, 0, 0.06);
+  border: 1px solid rgba(58, 123, 213, 0.08);
+  transition: border-color 0.25s ease;
+}
+
+.nutrition-progression:hover {
+  border-color: rgba(58, 123, 213, 0.2);
+}
+
+.nutrition-progression > h3 {
+  font-family: var(--font-display);
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: var(--dark);
+  margin: 0 0 6px;
+}
+
+.nutrition-progression > h3 i {
+  color: var(--blue);
+  margin-right: 8px;
+}
+
+.nutrition-progression-sub {
+  font-family: var(--font-body);
+  font-size: 0.88rem;
+  color: #666;
+  margin: 0 0 24px;
+  line-height: 1.5;
+}
+
+.nutrition-progression-steps {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr auto 1fr;
+  gap: 0;
+  align-items: stretch;
+}
+
+.nutrition-progression-step {
+  background: linear-gradient(135deg, #f8f9fb 0%, #f0f4f8 100%);
+  border-radius: 12px;
+  padding: 20px;
+  text-align: center;
+  border: 1px solid rgba(58, 123, 213, 0.06);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.nutrition-progression-step:hover {
+  border-color: rgba(58, 123, 213, 0.15);
+  box-shadow: 0 4px 16px rgba(58, 123, 213, 0.1);
+}
+
+.nutrition-progression-step-num {
+  font-family: var(--font-display);
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--blue);
+  line-height: 1;
+}
+
+.nutrition-progression-step-label {
+  font-family: var(--font-body);
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #999;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 10px;
+}
+
+.nutrition-progression-step h4 {
+  font-family: var(--font-display);
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--dark);
+  margin: 0 0 6px;
+}
+
+.nutrition-progression-step p {
+  font-family: var(--font-body);
+  font-size: 0.82rem;
+  color: #666;
+  line-height: 1.5;
+  margin: 0;
+}
+
+.nutrition-progression-arrow {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+}
+
+.nutrition-progression-arrow i {
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--blue);
+  color: #fff;
+  border-radius: 50%;
+  font-size: 0.65rem;
+  box-shadow: 0 3px 12px rgba(58, 123, 213, 0.25);
+}
+
+/* Hand-measure portion guide */
+.nutrition-progression-hands {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+  margin-top: 14px;
+}
+
+.nutrition-hand {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 10px 6px 8px;
+  background: #fff;
+  border-radius: 10px;
+  border: 1px solid rgba(58, 123, 213, 0.08);
+}
+
+.nutrition-hand-macro {
+  font-size: 0.6rem;
+  font-weight: 600;
+  margin-top: 2px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 8px;
+  border-radius: 10px;
+}
+
+.nutrition-hand-macro i {
+  font-size: 0.55rem;
+}
+
+.nutrition-hand-macro--protein { background: #fce4ec; color: #c62828; }
+.nutrition-hand-macro--protein i { color: #c62828; }
+.nutrition-hand-macro--fats { background: #e8f5e9; color: #2e7d32; }
+.nutrition-hand-macro--fats i { color: #2e7d32; }
+.nutrition-hand-macro--carbs { background: #e3f2fd; color: #1565c0; }
+.nutrition-hand-macro--carbs i { color: #1565c0; }
+.nutrition-hand-macro--veggies { background: #fff3e0; color: #e65100; }
+.nutrition-hand-macro--veggies i { color: #e65100; }
+
+.nutrition-hand-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, rgba(58, 123, 213, 0.1) 0%, rgba(58, 123, 213, 0.05) 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--blue);
+  font-size: 0.95rem;
+}
+
+.nutrition-hand strong {
+  font-family: var(--font-display);
+  font-size: 0.72rem;
+  color: var(--dark);
+}
+
+.nutrition-hand span:not(.nutrition-hand-icon) {
+  font-family: var(--font-body);
+  font-size: 0.68rem;
+  color: #888;
 }
 
 /* Footer */
@@ -3424,9 +4062,14 @@ h3 { font-size: 1.5rem; }
   .members-area-calendar iframe { height: 500px; }
   .nutrition-cards { grid-template-columns: 1fr 1fr; }
   .nutrition-cards-vertical { grid-template-columns: 1fr; }
-  .nutrition-videos-grid { grid-template-columns: repeat(2, 1fr); }
-  .nk-banner { padding: 20px 24px; }
-  .nk-banner-text h2 { font-size: 1.2rem; }
+  .refer-banner,
+  .nk-banner { padding: 10px 16px; }
+  .refer-banner-text,
+  .nk-banner-text { flex-direction: column; gap: 2px; }
+  .refer-banner-text h2,
+  .nk-banner-text h2 { font-size: 0.85rem; white-space: normal; }
+  .refer-banner-text p,
+  .nk-banner-text p { font-size: 0.75rem; white-space: normal; }
 }
 
 @media (max-width: 480px) {
@@ -3474,7 +4117,6 @@ h3 { font-size: 1.5rem; }
   .members-area-calendar iframe { height: 400px; }
   .members-area-logo img { width: 60px; height: 60px; }
   .nutrition-cards { grid-template-columns: 1fr; }
-  .nutrition-videos-grid { grid-template-columns: 1fr; }
   .nutrition-kickstart { margin-top: 40px; }
   .nutrition-card { padding: 24px 20px; }
   .nutrition-card-wide { flex-direction: column; text-align: center; align-items: center; }
@@ -3484,12 +4126,24 @@ h3 { font-size: 1.5rem; }
   .nutrition-paired-connector i { transform: rotate(90deg); }
   .nutrition-howto-item span { display: block; margin-left: 0; }
   .nutrition-resources-grid { grid-template-columns: 1fr; }
-  .nk-banner { padding: 18px 16px; border-radius: 12px; }
-  .nk-banner-icon { width: 44px; height: 44px; font-size: 1.1rem; border-radius: 10px; }
-  .nk-banner-text h2 { font-size: 1.05rem; }
-  .nk-banner-text p { font-size: 0.8rem; }
-  .nk-banner-content { gap: 14px; }
-  .nk-banner-arrow { width: 30px; height: 30px; font-size: 0.75rem; }
+  .nutrition-progression-steps { grid-template-columns: 1fr; gap: 0; }
+  .nutrition-progression-arrow { width: auto; height: 36px; }
+  .nutrition-progression-arrow i { transform: rotate(90deg); }
+  .nutrition-progression-hands { grid-template-columns: repeat(2, 1fr); }
+  .refer-banner,
+  .nk-banner { padding: 10px 14px; border-radius: 10px; }
+  .refer-banner-text,
+  .nk-banner-text { flex-direction: column; gap: 2px; }
+  .refer-banner-text h2,
+  .nk-banner-text h2 { font-size: 0.82rem; white-space: normal; }
+  .refer-banner-text p,
+  .nk-banner-text p { font-size: 0.72rem; white-space: normal; }
+  .refer-banner-content,
+  .nk-banner-content { gap: 10px; }
+  .refer-banner-icon,
+  .nk-banner-icon { width: 28px; height: 28px; font-size: 0.8rem; }
+  .refer-banner-arrow,
+  .nk-banner-arrow { width: 26px; height: 26px; font-size: 0.65rem; }
 
   .popup-modal { padding: 32px 24px 28px; border-radius: 16px; }
   .popup-heading { font-size: 1.4rem; }
