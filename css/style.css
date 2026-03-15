@@ -2538,6 +2538,101 @@ h3 { font-size: 1.5rem; }
   display: block;
 }
 
+/* ── Tracker & Challenge Banners ── */
+.tracker-banner {
+  display: block;
+  width: 100%;
+  max-width: 1100px;
+  margin: 0 0 10px;
+  padding: 10px 20px;
+  border-radius: 10px;
+  background: linear-gradient(135deg, #065f46 0%, #10b981 100%);
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  text-decoration: none;
+}
+
+.tracker-banner:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 40px rgba(16, 185, 129, 0.3);
+}
+
+.tracker-banner-icon {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.9rem;
+  color: #fff;
+  flex-shrink: 0;
+}
+
+.challenge-banner {
+  display: block;
+  width: 100%;
+  max-width: 1100px;
+  margin: 0 0 10px;
+  padding: 10px 20px;
+  border-radius: 10px;
+  background: linear-gradient(135deg, #1a1a2e 0%, #7c3aed 100%);
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  text-decoration: none;
+}
+
+.challenge-banner:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 40px rgba(124, 58, 237, 0.3);
+}
+
+.challenge-banner-icon {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.9rem;
+  color: #fbbf24;
+  flex-shrink: 0;
+}
+
+.tracker-back {
+  font-family: var(--font-display);
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--blue);
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 24px;
+  transition: color 0.2s ease;
+}
+
+.tracker-back:hover { color: var(--blue-dark); }
+
+.challenge-checkin-note {
+  font-family: var(--font-body);
+  font-size: 0.75rem;
+  color: #999;
+  text-align: center;
+  margin-top: 12px;
+}
+
+.challenge-checkin-note a {
+  color: var(--blue);
+  text-decoration: underline;
+}
+
 /* ── Goal & Accountability Tracker ── */
 .tracker-section,
 .challenge-section {
@@ -4425,7 +4520,9 @@ h3 { font-size: 1.5rem; }
   .nutrition-cards { grid-template-columns: 1fr 1fr; }
   .nutrition-cards-vertical { grid-template-columns: 1fr; }
   .refer-banner,
-  .nk-banner { padding: 10px 16px; }
+  .nk-banner,
+  .tracker-banner,
+  .challenge-banner { padding: 10px 16px; }
   .refer-banner-text,
   .nk-banner-text { flex-direction: column; gap: 2px; }
   .refer-banner-text h2,
@@ -4501,7 +4598,9 @@ h3 { font-size: 1.5rem; }
   .nutrition-progression-arrow i { transform: rotate(90deg); }
   .nutrition-progression-hands { grid-template-columns: repeat(2, 1fr); }
   .refer-banner,
-  .nk-banner { padding: 10px 14px; border-radius: 10px; }
+  .nk-banner,
+  .tracker-banner,
+  .challenge-banner { padding: 10px 14px; border-radius: 10px; }
   .refer-banner-text,
   .nk-banner-text { flex-direction: column; gap: 2px; }
   .refer-banner-text h2,
@@ -4511,7 +4610,9 @@ h3 { font-size: 1.5rem; }
   .refer-banner-content,
   .nk-banner-content { gap: 10px; }
   .refer-banner-icon,
-  .nk-banner-icon { width: 28px; height: 28px; font-size: 0.8rem; }
+  .nk-banner-icon,
+  .tracker-banner-icon,
+  .challenge-banner-icon { width: 28px; height: 28px; font-size: 0.8rem; }
   .refer-banner-arrow,
   .nk-banner-arrow { width: 26px; height: 26px; font-size: 0.65rem; }
 

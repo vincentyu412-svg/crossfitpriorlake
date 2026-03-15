@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="CrossFit Prior Lake — monthly class challenge and rewards.">
+  <title>Monthly Challenge | CrossFit Prior Lake</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
+
+  <link rel="preload" href="css/style.css?v=2" as="style">
+  <link rel="stylesheet" href="css/style.css?v=2">
+
+  <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=League+Spartan:wght@400;500;600;700&family=Open+Sans:wght@400;500;600&display=swap">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=League+Spartan:wght@400;500;600;700&family=Open+Sans:wght@400;500;600&display=swap" media="print" onload="this.media='all'">
+
+  <link rel="preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" media="print" onload="this.media='all'">
+
+  <noscript>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=League+Spartan:wght@400;500;600;700&family=Open+Sans:wght@400;500;600&display=swap">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  </noscript>
+
+  <link rel="icon" type="image/webp" sizes="32x32" href="images/favicon-32x32.webp">
+  <link rel="icon" type="image/webp" sizes="16x16" href="images/favicon-16x16.webp">
+  <link rel="apple-touch-icon" sizes="180x180" href="images/apple-touch-icon.webp">
+  <link rel="manifest" href="site.webmanifest">
+  <meta name="robots" content="noindex, nofollow">
+</head>
+<body>
+
+  <div class="members-area">
+    <div class="members-area-header">
+      <a href="members-area.html" class="members-area-logo"><img src="images/logo.webp" alt="CrossFit Prior Lake"></a>
+      <a href="members-area.html" class="tracker-back"><i class="fas fa-arrow-left"></i> Members Area</a>
+    </div>
+
+    <div class="challenge-section">
+      <h2 class="tracker-heading"><i class="fas fa-trophy"></i> Monthly Challenge</h2>
+
+      <div class="challenge-card">
+        <div class="challenge-month" id="challengeMonth"></div>
+        <h3 class="challenge-title">20 Classes This Month</h3>
+        <p class="challenge-desc">Show up, check in on the tracker, and watch your progress grow. Every class you log counts toward the challenge!</p>
+        <div class="challenge-progress-wrap">
+          <div class="challenge-progress-bar">
+            <div class="challenge-progress-fill" id="challengeFill"></div>
+          </div>
+          <div class="challenge-progress-label"><span id="challengeCount">0</span> / 20 classes</div>
+        </div>
+        <div class="challenge-tiers">
+          <div class="challenge-tier" id="tier1"><i class="fas fa-star"></i> 10 classes — Shoutout on socials</div>
+          <div class="challenge-tier" id="tier2"><i class="fas fa-fire"></i> 15 classes — Free gym shirt</div>
+          <div class="challenge-tier" id="tier3"><i class="fas fa-crown"></i> 20 classes — Free month added</div>
+        </div>
+      </div>
+
+      <!-- Quick check-in from challenge page -->
+      <div class="tracker-card" style="margin-top: 20px;">
+        <div class="tracker-card-header">
+          <h3><i class="fas fa-calendar-check"></i> Quick Check-In</h3>
+        </div>
+        <button class="tracker-btn-checkin" id="challengeCheckinBtn" onclick="logCheckin()"><i class="fas fa-plus"></i> Check In Today</button>
+        <p class="challenge-checkin-note">Don't have a tracker yet? <a href="tracker.html">Set up your tracker</a> first.</p>
+      </div>
+    </div>
+
+    <div class="members-area-footer">
+      <a href="members-area.html" class="login-return"><i class="fas fa-arrow-left"></i> BACK TO MEMBERS AREA</a>
+    </div>
+  </div>
+
+  <script>
+    if (sessionStorage.getItem('cfpl_auth') !== '1') {
+      window.location.href = 'members.html';
+    }
+
+    (function() {
+      var entries = JSON.parse(localStorage.getItem('cfpl_tracker_entries') || '[]');
+
+      renderChallenge();
+      renderCheckinState();
+
+      function getMonthStart() {
+        var d = new Date(); d.setDate(1); d.setHours(0,0,0,0);
+        return d;
+      }
+
+      function renderChallenge() {
+        var ms = getMonthStart();
+        var monthCheckins = entries.filter(function(e) { return e.type === 'checkin' && new Date(e.date) >= ms; });
+        var count = monthCheckins.length;
+        var goal = 20;
+        var pct = Math.min(count / goal * 100, 100);
+        document.getElementById('challengeCount').textContent = count;
+        document.getElementById('challengeFill').style.width = pct + '%';
+        document.getElementById('challengeMonth').textContent = new Date().toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+        document.getElementById('tier1').classList.toggle('reached', count >= 10);
+        document.getElementById('tier2').classList.toggle('reached', count >= 15);
+        document.getElementById('tier3').classList.toggle('reached', count >= 20);
+      }
+
+      function renderCheckinState() {
+        var today = new Date(); today.setHours(0,0,0,0);
+        var ws = new Date(); ws.setHours(0,0,0,0);
+        var day = ws.getDay(); var diff = day === 0 ? 6 : day - 1;
+        ws.setDate(ws.getDate() - diff);
+        var weekCheckins = entries.filter(function(e) {
+          return e.type === 'checkin' && new Date(e.date) >= ws;
+        });
+        var alreadyCheckedIn = weekCheckins.some(function(c) {
+          var cd = new Date(c.date); cd.setHours(0,0,0,0);
+          return cd.getTime() === today.getTime();
+        });
+        var btn = document.getElementById('challengeCheckinBtn');
+        if (alreadyCheckedIn) {
+          btn.disabled = true;
+          btn.innerHTML = '<i class="fas fa-check"></i> Checked In Today';
+          btn.classList.add('checked');
+        }
+      }
+
+      window.logCheckin = function() {
+        var entry = { type: 'checkin', date: new Date().toISOString() };
+        entries.push(entry);
+        localStorage.setItem('cfpl_tracker_entries', JSON.stringify(entries));
+        renderChallenge();
+        renderCheckinState();
+      };
+    })();
+  </script>
+</body>
+</html>

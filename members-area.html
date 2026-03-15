@@ -93,86 +93,31 @@
     <h2 class="members-area-heading" style="margin-top:48px;">Workouts of the Week</h2>
     <p class="members-area-sub"><a href="https://drive.google.com/drive/folders/1n11GgbxBYTU2CswyBfxz4XaDeVoaTISQ" target="_blank" rel="noopener noreferrer" style="color:var(--blue);text-decoration:underline;">View Workouts <i class="fas fa-external-link-alt"></i></a></p>
 
-    <!-- Goal & Accountability Tracker -->
-    <div class="tracker-section">
-      <h2 class="tracker-heading"><i class="fas fa-bullseye"></i> My Tracker</h2>
-
-      <!-- Setup screen (shown once, then remembered) -->
-      <div class="tracker-setup" id="trackerSetup">
-        <p class="tracker-setup-text">Set up your tracker to log check-ins, track weight, and stay accountable.</p>
-        <form class="tracker-setup-form" id="trackerSetupForm">
-          <div class="refer-name-row">
-            <label>First Name<input type="text" id="tsFirstName" required></label>
-            <label>Last Name<input type="text" id="tsLastName" required></label>
-          </div>
-          <label>Phone<input type="tel" id="tsPhone" required></label>
-          <button type="submit" class="tracker-btn-primary"><i class="fas fa-check"></i> Start Tracking</button>
-        </form>
+    <!-- Tracker Banner -->
+    <a href="tracker.html" class="tracker-banner">
+      <div class="nk-banner-glow"></div>
+      <div class="nk-banner-content">
+        <div class="tracker-banner-icon"><i class="fas fa-bullseye"></i></div>
+        <div class="nk-banner-text">
+          <h2>My Tracker</h2>
+          <p>Log check-ins, track weight &amp; stay accountable</p>
+        </div>
+        <div class="nk-banner-arrow"><i class="fas fa-arrow-right"></i></div>
       </div>
+    </a>
 
-      <!-- Main tracker (shown after setup) -->
-      <div class="tracker-main" id="trackerMain" style="display:none;">
-        <div class="tracker-welcome" id="trackerWelcome"></div>
-
-        <!-- Weekly attendance -->
-        <div class="tracker-card">
-          <div class="tracker-card-header">
-            <h3><i class="fas fa-calendar-check"></i> This Week's Attendance</h3>
-          </div>
-          <div class="tracker-attendance">
-            <div class="tracker-week-dots" id="trackerWeekDots"></div>
-            <div class="tracker-week-count"><span id="trackerWeekCount">0</span> / 7 classes</div>
-          </div>
-          <button class="tracker-btn-checkin" id="trackerCheckinBtn" onclick="logCheckin()"><i class="fas fa-plus"></i> Check In Today</button>
+    <!-- Challenge Banner -->
+    <a href="challenge.html" class="challenge-banner">
+      <div class="nk-banner-glow"></div>
+      <div class="nk-banner-content">
+        <div class="challenge-banner-icon"><i class="fas fa-trophy"></i></div>
+        <div class="nk-banner-text">
+          <h2>Monthly Challenge</h2>
+          <p>Hit 20 classes this month — earn rewards</p>
         </div>
-
-        <!-- Log weight & mood -->
-        <div class="tracker-card">
-          <div class="tracker-card-header">
-            <h3><i class="fas fa-weight-scale"></i> Log Progress</h3>
-          </div>
-          <form class="tracker-log-form" id="trackerLogForm">
-            <div class="refer-name-row">
-              <label>Weight (lbs)<input type="number" id="tlWeight" step="0.1" min="50" max="500"></label>
-              <label>How do you feel? (1–10)<input type="number" id="tlMood" min="1" max="10"></label>
-            </div>
-            <button type="submit" class="tracker-btn-primary"><i class="fas fa-save"></i> Save Entry</button>
-          </form>
-        </div>
-
-        <!-- History -->
-        <div class="tracker-card">
-          <div class="tracker-card-header">
-            <h3><i class="fas fa-chart-line"></i> History</h3>
-            <button class="tracker-btn-small" onclick="clearHistory()">Clear</button>
-          </div>
-          <div class="tracker-history" id="trackerHistory">
-            <p class="tracker-empty">No entries yet — start logging!</p>
-          </div>
-        </div>
+        <div class="nk-banner-arrow"><i class="fas fa-arrow-right"></i></div>
       </div>
-    </div>
-
-    <!-- Monthly Challenge Board -->
-    <div class="challenge-section">
-      <h2 class="tracker-heading"><i class="fas fa-trophy"></i> Monthly Challenge</h2>
-      <div class="challenge-card">
-        <div class="challenge-month" id="challengeMonth"></div>
-        <h3 class="challenge-title">20 Classes This Month</h3>
-        <p class="challenge-desc">Hit 20 classes before the month ends. Track your check-ins above — every one counts toward the challenge!</p>
-        <div class="challenge-progress-wrap">
-          <div class="challenge-progress-bar">
-            <div class="challenge-progress-fill" id="challengeFill"></div>
-          </div>
-          <div class="challenge-progress-label"><span id="challengeCount">0</span> / 20 classes</div>
-        </div>
-        <div class="challenge-tiers">
-          <div class="challenge-tier" id="tier1"><i class="fas fa-star"></i> 10 classes — Shoutout on socials</div>
-          <div class="challenge-tier" id="tier2"><i class="fas fa-fire"></i> 15 classes — Free gym shirt</div>
-          <div class="challenge-tier" id="tier3"><i class="fas fa-crown"></i> 20 classes — Free month added</div>
-        </div>
-      </div>
-    </div>
+    </a>
 
     <div class="members-area-footer">
       <a href="index.html" class="login-return">RETURN BACK TO WEBSITE</a>
@@ -222,150 +167,6 @@
         btn.innerHTML = '<i class="fas fa-paper-plane"></i> Send Referral';
       }
     }
-
-    // ── Tracker Logic ──
-    (function() {
-      var profile = JSON.parse(localStorage.getItem('cfpl_tracker_profile') || 'null');
-      var entries = JSON.parse(localStorage.getItem('cfpl_tracker_entries') || '[]');
-
-      if (profile) {
-        showTracker(profile);
-      }
-
-      document.getElementById('trackerSetupForm').addEventListener('submit', function(e) {
-        e.preventDefault();
-        profile = {
-          firstName: document.getElementById('tsFirstName').value.trim(),
-          lastName: document.getElementById('tsLastName').value.trim(),
-          phone: document.getElementById('tsPhone').value.trim()
-        };
-        localStorage.setItem('cfpl_tracker_profile', JSON.stringify(profile));
-        showTracker(profile);
-      });
-
-      document.getElementById('trackerLogForm').addEventListener('submit', function(e) {
-        e.preventDefault();
-        var w = document.getElementById('tlWeight').value;
-        var m = document.getElementById('tlMood').value;
-        if (!w && !m) return;
-        var entry = { type: 'log', date: new Date().toISOString(), weight: w ? parseFloat(w) : null, mood: m ? parseInt(m) : null };
-        entries.push(entry);
-        localStorage.setItem('cfpl_tracker_entries', JSON.stringify(entries));
-        document.getElementById('tlWeight').value = '';
-        document.getElementById('tlMood').value = '';
-        renderHistory();
-        renderChallenge();
-      });
-
-      function showTracker(p) {
-        document.getElementById('trackerSetup').style.display = 'none';
-        document.getElementById('trackerMain').style.display = 'block';
-        document.getElementById('trackerWelcome').textContent = 'Hey ' + p.firstName + '! Keep showing up.';
-        renderWeek();
-        renderHistory();
-        renderChallenge();
-      }
-
-      function getWeekStart() {
-        var d = new Date(); d.setHours(0,0,0,0);
-        var day = d.getDay(); var diff = day === 0 ? 6 : day - 1;
-        d.setDate(d.getDate() - diff);
-        return d;
-      }
-
-      function getMonthStart() {
-        var d = new Date(); d.setDate(1); d.setHours(0,0,0,0);
-        return d;
-      }
-
-      function renderWeek() {
-        var ws = getWeekStart();
-        var days = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
-        var checkins = entries.filter(function(e) { return e.type === 'checkin' && new Date(e.date) >= ws; });
-        var checkinDays = {};
-        checkins.forEach(function(c) { checkinDays[new Date(c.date).getDay()] = true; });
-        var dots = document.getElementById('trackerWeekDots');
-        dots.innerHTML = '';
-        var count = 0;
-        for (var i = 0; i < 7; i++) {
-          var dayNum = (i + 1) % 7;
-          var filled = checkinDays[dayNum];
-          if (filled) count++;
-          var dot = document.createElement('div');
-          dot.className = 'tracker-dot' + (filled ? ' filled' : '');
-          dot.innerHTML = '<span>' + days[i] + '</span>';
-          dots.appendChild(dot);
-        }
-        document.getElementById('trackerWeekCount').textContent = count;
-
-        var today = new Date(); today.setHours(0,0,0,0);
-        var alreadyCheckedIn = checkins.some(function(c) {
-          var cd = new Date(c.date); cd.setHours(0,0,0,0);
-          return cd.getTime() === today.getTime();
-        });
-        var btn = document.getElementById('trackerCheckinBtn');
-        if (alreadyCheckedIn) {
-          btn.disabled = true;
-          btn.innerHTML = '<i class="fas fa-check"></i> Checked In Today';
-          btn.classList.add('checked');
-        }
-      }
-
-      window.logCheckin = function() {
-        var entry = { type: 'checkin', date: new Date().toISOString() };
-        entries.push(entry);
-        localStorage.setItem('cfpl_tracker_entries', JSON.stringify(entries));
-        renderWeek();
-        renderHistory();
-        renderChallenge();
-      };
-
-      function renderHistory() {
-        var container = document.getElementById('trackerHistory');
-        var sorted = entries.slice().reverse().slice(0, 20);
-        if (sorted.length === 0) {
-          container.innerHTML = '<p class="tracker-empty">No entries yet — start logging!</p>';
-          return;
-        }
-        var html = '';
-        sorted.forEach(function(e) {
-          var d = new Date(e.date);
-          var dateStr = d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
-          if (e.type === 'checkin') {
-            html += '<div class="tracker-history-item checkin"><span class="tracker-history-icon"><i class="fas fa-check-circle"></i></span><span>Class check-in</span><span class="tracker-history-date">' + dateStr + '</span></div>';
-          } else {
-            var parts = [];
-            if (e.weight) parts.push(e.weight + ' lbs');
-            if (e.mood) parts.push('Feeling: ' + e.mood + '/10');
-            html += '<div class="tracker-history-item log"><span class="tracker-history-icon"><i class="fas fa-pen"></i></span><span>' + parts.join(' · ') + '</span><span class="tracker-history-date">' + dateStr + '</span></div>';
-          }
-        });
-        container.innerHTML = html;
-      }
-
-      function renderChallenge() {
-        var ms = getMonthStart();
-        var monthCheckins = entries.filter(function(e) { return e.type === 'checkin' && new Date(e.date) >= ms; });
-        var count = monthCheckins.length;
-        var goal = 20;
-        var pct = Math.min(count / goal * 100, 100);
-        document.getElementById('challengeCount').textContent = count;
-        document.getElementById('challengeFill').style.width = pct + '%';
-        document.getElementById('challengeMonth').textContent = new Date().toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
-        document.getElementById('tier1').classList.toggle('reached', count >= 10);
-        document.getElementById('tier2').classList.toggle('reached', count >= 15);
-        document.getElementById('tier3').classList.toggle('reached', count >= 20);
-      }
-
-      window.clearHistory = function() {
-        if (!confirm('Clear all your tracker history? This cannot be undone.')) return;
-        entries = [];
-        localStorage.removeItem('cfpl_tracker_entries');
-        renderWeek();
-        renderHistory();
-        renderChallenge();
-      };
-    })();
   </script>
 
   <script src="https://widgets.leadconnectorhq.com/loader.js" data-resources-url="https://widgets.leadconnectorhq.com/chat-widget/loader.js" data-widget-id="67d07bcbf71a1a4a21e40b2a"></script>
