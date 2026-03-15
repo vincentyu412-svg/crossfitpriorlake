@@ -347,14 +347,22 @@
         currentUser = user;
         docRef = db.collection('users').doc(user.uid);
         document.getElementById('trackerAuth').style.display = 'none';
-        document.getElementById('trackerSetup').style.display = '';
+        // Keep setup hidden until we know if profile exists
+        document.getElementById('trackerSetup').style.display = 'none';
         docRef.get().then(function(doc) {
           if (doc.exists) {
             var data = doc.data();
             profile = data.profile || null;
             entries = data.entries || [];
           }
-          if (profile) showTracker(profile);
+          if (profile) {
+            showTracker(profile);
+          } else {
+            document.getElementById('trackerSetup').style.display = '';
+          }
+        }).catch(function() {
+          // If Firestore fails, show setup so page isn't blank
+          document.getElementById('trackerSetup').style.display = '';
         });
       }
 
