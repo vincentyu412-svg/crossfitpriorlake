@@ -2538,6 +2538,368 @@ h3 { font-size: 1.5rem; }
   display: block;
 }
 
+/* ── Goal & Accountability Tracker ── */
+.tracker-section,
+.challenge-section {
+  width: 100%;
+  max-width: 1100px;
+  margin: 48px auto 0;
+}
+
+.tracker-heading {
+  font-family: var(--font-display);
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--dark);
+  margin: 0 0 20px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.tracker-heading i { color: var(--blue); }
+
+.tracker-setup-text {
+  font-family: var(--font-body);
+  font-size: 0.9rem;
+  color: #666;
+  margin-bottom: 16px;
+}
+
+.tracker-setup-form { max-width: 500px; }
+.tracker-setup-form label {
+  font-family: var(--font-display);
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--dark);
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-bottom: 12px;
+}
+
+.tracker-setup-form input {
+  padding: 10px 12px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  font-family: var(--font-body);
+  font-size: 0.88rem;
+  transition: border-color 0.2s ease;
+}
+
+.tracker-setup-form input:focus {
+  outline: none;
+  border-color: var(--blue);
+  box-shadow: 0 0 0 3px rgba(58, 123, 213, 0.12);
+}
+
+.tracker-welcome {
+  font-family: var(--font-display);
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--dark);
+  margin-bottom: 20px;
+}
+
+.tracker-card {
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 14px;
+  padding: 20px 24px;
+  margin-bottom: 16px;
+}
+
+.tracker-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+
+.tracker-card-header h3 {
+  font-family: var(--font-display);
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--dark);
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.tracker-card-header h3 i { color: var(--blue); font-size: 0.85rem; }
+
+.tracker-btn-primary {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  padding: 12px;
+  background: linear-gradient(135deg, var(--blue) 0%, var(--blue-dark) 100%);
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  font-family: var(--font-display);
+  font-size: 0.88rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.tracker-btn-primary:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 16px rgba(58, 123, 213, 0.35);
+}
+
+.tracker-btn-small {
+  background: none;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  padding: 4px 10px;
+  font-family: var(--font-display);
+  font-size: 0.68rem;
+  font-weight: 600;
+  color: #999;
+  cursor: pointer;
+  transition: color 0.2s ease, border-color 0.2s ease;
+}
+
+.tracker-btn-small:hover { color: #dc2626; border-color: #dc2626; }
+
+/* Attendance dots */
+.tracker-attendance { margin-bottom: 16px; }
+
+.tracker-week-dots {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.tracker-dot {
+  flex: 1;
+  height: 40px;
+  border-radius: 8px;
+  background: #f3f4f6;
+  border: 2px solid #e5e7eb;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+
+.tracker-dot span {
+  font-family: var(--font-display);
+  font-size: 0.62rem;
+  font-weight: 600;
+  color: #aaa;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.tracker-dot.filled {
+  background: linear-gradient(135deg, #16a34a, #22c55e);
+  border-color: #16a34a;
+}
+
+.tracker-dot.filled span { color: #fff; }
+
+.tracker-week-count {
+  font-family: var(--font-display);
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: #666;
+  text-align: center;
+}
+
+.tracker-btn-checkin {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  padding: 14px;
+  background: linear-gradient(135deg, #16a34a, #22c55e);
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  font-family: var(--font-display);
+  font-size: 0.95rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.tracker-btn-checkin:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 16px rgba(22, 163, 74, 0.4);
+}
+
+.tracker-btn-checkin.checked {
+  background: #e5e7eb;
+  color: #16a34a;
+  cursor: default;
+}
+
+.tracker-btn-checkin:disabled { opacity: 0.9; }
+
+/* Log form */
+.tracker-log-form label {
+  font-family: var(--font-display);
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--dark);
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.tracker-log-form input {
+  padding: 10px 12px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  font-family: var(--font-body);
+  font-size: 0.88rem;
+  transition: border-color 0.2s ease;
+}
+
+.tracker-log-form input:focus {
+  outline: none;
+  border-color: var(--blue);
+  box-shadow: 0 0 0 3px rgba(58, 123, 213, 0.12);
+}
+
+.tracker-log-form .refer-name-row { margin-bottom: 14px; }
+
+/* History */
+.tracker-history { max-height: 300px; overflow-y: auto; }
+
+.tracker-history-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 0;
+  border-bottom: 1px solid #f3f4f6;
+  font-family: var(--font-body);
+  font-size: 0.82rem;
+  color: var(--dark);
+}
+
+.tracker-history-item:last-child { border-bottom: none; }
+
+.tracker-history-icon {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.7rem;
+  flex-shrink: 0;
+}
+
+.tracker-history-item.checkin .tracker-history-icon { background: #dcfce7; color: #16a34a; }
+.tracker-history-item.log .tracker-history-icon { background: #dbeafe; color: var(--blue); }
+
+.tracker-history-date {
+  margin-left: auto;
+  color: #999;
+  font-size: 0.72rem;
+  flex-shrink: 0;
+}
+
+.tracker-empty {
+  font-family: var(--font-body);
+  font-size: 0.82rem;
+  color: #aaa;
+  text-align: center;
+  padding: 20px 0;
+}
+
+/* ── Monthly Challenge Board ── */
+.challenge-section { margin-top: 40px; }
+
+.challenge-card {
+  background: linear-gradient(135deg, #1a1a2e 0%, #2d1b4e 50%, #1a1a2e 100%);
+  border-radius: 16px;
+  padding: 28px;
+  color: #fff;
+}
+
+.challenge-month {
+  font-family: var(--font-display);
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: #a78bfa;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  margin-bottom: 8px;
+}
+
+.challenge-title {
+  font-family: var(--font-display);
+  font-size: 1.4rem;
+  font-weight: 700;
+  margin: 0 0 8px;
+}
+
+.challenge-desc {
+  font-family: var(--font-body);
+  font-size: 0.85rem;
+  color: rgba(255,255,255,0.7);
+  margin: 0 0 24px;
+  line-height: 1.5;
+}
+
+.challenge-progress-wrap { margin-bottom: 24px; }
+
+.challenge-progress-bar {
+  width: 100%;
+  height: 12px;
+  background: rgba(255,255,255,0.1);
+  border-radius: 6px;
+  overflow: hidden;
+  margin-bottom: 8px;
+}
+
+.challenge-progress-fill {
+  height: 100%;
+  width: 0%;
+  background: linear-gradient(90deg, #a78bfa, #f472b6);
+  border-radius: 6px;
+  transition: width 0.5s ease;
+}
+
+.challenge-progress-label {
+  font-family: var(--font-display);
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: rgba(255,255,255,0.8);
+}
+
+.challenge-tiers { display: flex; flex-direction: column; gap: 8px; }
+
+.challenge-tier {
+  font-family: var(--font-body);
+  font-size: 0.8rem;
+  color: rgba(255,255,255,0.4);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  border-radius: 8px;
+  background: rgba(255,255,255,0.04);
+  transition: all 0.3s ease;
+}
+
+.challenge-tier i { font-size: 0.75rem; }
+
+.challenge-tier.reached {
+  color: #fff;
+  background: rgba(167, 139, 250, 0.2);
+  border-left: 3px solid #a78bfa;
+}
+
 .members-area-footer {
   margin-top: 32px;
 }
@@ -4116,6 +4478,14 @@ h3 { font-size: 1.5rem; }
   .members-area-heading { font-size: 1.5rem; }
   .members-area-calendar iframe { height: 400px; }
   .members-area-logo img { width: 60px; height: 60px; }
+  .tracker-heading { font-size: 1.2rem; }
+  .tracker-card { padding: 16px; }
+  .tracker-dot { height: 34px; }
+  .tracker-dot span { font-size: 0.55rem; }
+  .challenge-card { padding: 20px; }
+  .challenge-title { font-size: 1.15rem; }
+  .challenge-desc { font-size: 0.78rem; }
+  .challenge-tier { font-size: 0.72rem; padding: 6px 10px; }
   .nutrition-cards { grid-template-columns: 1fr; }
   .nutrition-kickstart { margin-top: 40px; }
   .nutrition-card { padding: 24px 20px; }
