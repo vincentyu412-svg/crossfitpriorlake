@@ -237,40 +237,6 @@
           </form>
         </div>
 
-        <!-- Activity Heatmap -->
-        <div class="tracker-card">
-          <div class="tracker-card-header">
-            <h3><i class="fas fa-fire-flame-curved"></i> Activity Heatmap</h3>
-            <div class="tracker-heatmap-nav">
-              <button class="tracker-btn-small" onclick="heatmapPrev()"><i class="fas fa-chevron-left"></i></button>
-              <span class="tracker-heatmap-month" id="heatmapMonth"></span>
-              <button class="tracker-btn-small" onclick="heatmapNext()"><i class="fas fa-chevron-right"></i></button>
-            </div>
-          </div>
-          <div class="tracker-heatmap-grid" id="trackerHeatmap"></div>
-          <div class="tracker-heatmap-legend">
-            <span class="tracker-heatmap-legend-label">Less</span>
-            <span class="tracker-heatmap-legend-box l0"></span>
-            <span class="tracker-heatmap-legend-box l1"></span>
-            <span class="tracker-heatmap-legend-box l2"></span>
-            <span class="tracker-heatmap-legend-label">More</span>
-          </div>
-        </div>
-
-        <!-- Weekly Trend -->
-        <div class="tracker-card">
-          <div class="tracker-card-header">
-            <h3><i class="fas fa-chart-bar"></i> Weekly Trend</h3>
-          </div>
-          <div class="tracker-trend-wrap">
-            <canvas id="trendChart" height="180"></canvas>
-          </div>
-          <div class="tracker-trend-empty" id="trendEmpty" style="display:none;">
-            <i class="fas fa-chart-column"></i>
-            <p>Check in to start seeing your weekly trend</p>
-          </div>
-        </div>
-
         <!-- Member Info -->
         <div class="tracker-card tracker-member-card">
           <div class="tracker-card-header">
@@ -513,8 +479,6 @@
         renderWeek();
         renderWeightChart();
         renderInsight();
-        renderHeatmap();
-        renderTrend();
         renderMemberInfo();
       }
 
@@ -1064,187 +1028,6 @@
         }
       };
 
-      /* ── Activity Heatmap ── */
-      var heatmapDate = new Date();
-      heatmapDate.setDate(1);
-
-      window.heatmapPrev = function() {
-        heatmapDate.setMonth(heatmapDate.getMonth() - 1);
-        renderHeatmap();
-      };
-      window.heatmapNext = function() {
-        var now = new Date();
-        now.setDate(1); now.setHours(0,0,0,0);
-        var next = new Date(heatmapDate);
-        next.setMonth(next.getMonth() + 1);
-        if (next <= now || next.getMonth() === now.getMonth() && next.getFullYear() === now.getFullYear()) {
-          heatmapDate.setMonth(heatmapDate.getMonth() + 1);
-        }
-        renderHeatmap();
-      };
-
-      function renderHeatmap() {
-        var monthNames = ['January','February','March','April','May','June','July','August','September','October','November','December'];
-        document.getElementById('heatmapMonth').textContent = monthNames[heatmapDate.getMonth()] + ' ' + heatmapDate.getFullYear();
-
-        var year = heatmapDate.getFullYear();
-        var month = heatmapDate.getMonth();
-        var daysInMonth = new Date(year, month + 1, 0).getDate();
-        var firstDayOfWeek = new Date(year, month, 1).getDay();
-        // Convert Sunday = 0 to Monday-start: Mon=0 ... Sun=6
-        var startOffset = firstDayOfWeek === 0 ? 6 : firstDayOfWeek - 1;
-
-        // Count check-ins per day this month
-        var dayCounts = {};
-        entries.forEach(function(e) {
-          if (e.type !== 'checkin') return;
-          var d = new Date(e.date);
-          if (d.getFullYear() === year && d.getMonth() === month) {
-            var day = d.getDate();
-            dayCounts[day] = (dayCounts[day] || 0) + 1;
-          }
-        });
-
-        var dayLabels = ['M','T','W','T','F','S','S'];
-        var html = '';
-        // Day labels row
-        for (var d = 0; d < 7; d++) {
-          html += '<div class="tracker-heatmap-label">' + dayLabels[d] + '</div>';
-        }
-        // Empty cells for offset
-        for (var o = 0; o < startOffset; o++) {
-          html += '<div class="tracker-heatmap-cell empty"></div>';
-        }
-        var today = new Date(); today.setHours(0,0,0,0);
-        for (var day = 1; day <= daysInMonth; day++) {
-          var count = dayCounts[day] || 0;
-          var level = count === 0 ? 'l0' : count === 1 ? 'l1' : 'l2';
-          var isToday = (year === today.getFullYear() && month === today.getMonth() && day === today.getDate());
-          html += '<div class="tracker-heatmap-cell ' + level + (isToday ? ' today' : '') + '" title="' + monthNames[month].slice(0,3) + ' ' + day + ': ' + count + ' check-in' + (count !== 1 ? 's' : '') + '">';
-          html += '<span>' + day + '</span></div>';
-        }
-        document.getElementById('trackerHeatmap').innerHTML = html;
-      }
-
-      /* ── Weekly Trend Bar Chart ── */
-      function renderTrend() {
-        var checkins = entries.filter(function(e) { return e.type === 'checkin'; });
-        var trendEmpty = document.getElementById('trendEmpty');
-        var canvas = document.getElementById('trendChart');
-
-        if (checkins.length === 0) {
-          trendEmpty.style.display = '';
-          canvas.style.display = 'none';
-          return;
-        }
-        trendEmpty.style.display = 'none';
-        canvas.style.display = '';
-
-        // Group check-ins by week for the last 8 weeks
-        var now = new Date();
-        var weeks = [];
-        for (var w = 7; w >= 0; w--) {
-          var ws = getWeekStart(new Date(now.getTime() - w * 7 * 86400000));
-          var we = new Date(ws); we.setDate(we.getDate() + 7);
-          var count = 0;
-          checkins.forEach(function(c) {
-            var cd = new Date(c.date);
-            if (cd >= ws && cd < we) count++;
-          });
-          weeks.push({
-            label: ws.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }),
-            count: count,
-            isCurrent: w === 0
-          });
-        }
-
-        var ctx = canvas.getContext('2d');
-        var dpr = window.devicePixelRatio || 1;
-        var rect = canvas.parentElement.getBoundingClientRect();
-        canvas.width = rect.width * dpr;
-        canvas.height = 180 * dpr;
-        canvas.style.width = rect.width + 'px';
-        canvas.style.height = '180px';
-        ctx.scale(dpr, dpr);
-
-        var W = rect.width;
-        var H = 180;
-        var pad = { top: 16, right: 12, bottom: 36, left: 32 };
-        var cW = W - pad.left - pad.right;
-        var cH = H - pad.top - pad.bottom;
-        var barW = Math.min(cW / weeks.length * 0.6, 32);
-        var gap = cW / weeks.length;
-        var maxCount = Math.max.apply(null, weeks.map(function(w) { return w.count; }));
-        maxCount = Math.max(maxCount, (profile && profile.weeklyGoal) || 4);
-
-        ctx.clearRect(0, 0, W, H);
-
-        // Grid lines
-        ctx.strokeStyle = '#f0f0f0';
-        ctx.lineWidth = 1;
-        for (var g = 0; g <= 4; g++) {
-          var gy = pad.top + (cH / 4) * g;
-          ctx.beginPath(); ctx.moveTo(pad.left, gy); ctx.lineTo(W - pad.right, gy); ctx.stroke();
-        }
-
-        // Goal line
-        var goal = (profile && profile.weeklyGoal) || 4;
-        var goalY = pad.top + cH - (goal / maxCount) * cH;
-        ctx.setLineDash([5, 3]);
-        ctx.strokeStyle = '#f59e0b';
-        ctx.lineWidth = 1.5;
-        ctx.beginPath(); ctx.moveTo(pad.left, goalY); ctx.lineTo(W - pad.right, goalY); ctx.stroke();
-        ctx.setLineDash([]);
-        ctx.fillStyle = '#f59e0b';
-        ctx.font = 'bold 9px League Spartan, sans-serif';
-        ctx.textAlign = 'left';
-        ctx.fillText('GOAL', W - pad.right - 28, goalY - 4);
-
-        // Bars
-        weeks.forEach(function(w, i) {
-          var x = pad.left + i * gap + (gap - barW) / 2;
-          var barH = maxCount > 0 ? (w.count / maxCount) * cH : 0;
-          var y = pad.top + cH - barH;
-          var radius = Math.max(0, Math.min(barW / 2, 4));
-
-          // Bar
-          var metGoal = w.count >= goal;
-          ctx.fillStyle = metGoal ? '#16a34a' : (w.isCurrent ? '#3a7bd5' : '#d1d5db');
-          ctx.beginPath();
-          ctx.moveTo(x, y + radius);
-          ctx.arcTo(x, y, x + barW, y, radius);
-          ctx.arcTo(x + barW, y, x + barW, y + barH, radius);
-          ctx.lineTo(x + barW, pad.top + cH);
-          ctx.lineTo(x, pad.top + cH);
-          ctx.closePath();
-          ctx.fill();
-
-          // Count on top
-          if (w.count > 0) {
-            ctx.fillStyle = '#666';
-            ctx.font = 'bold 10px League Spartan, sans-serif';
-            ctx.textAlign = 'center';
-            ctx.fillText(w.count, x + barW / 2, y - 4);
-          }
-
-          // X label
-          ctx.fillStyle = w.isCurrent ? '#333' : '#bbb';
-          ctx.font = (w.isCurrent ? 'bold ' : '') + '8px Open Sans, sans-serif';
-          ctx.textAlign = 'center';
-          ctx.fillText(w.label, x + barW / 2, H - 8);
-        });
-
-        // Y axis labels
-        ctx.fillStyle = '#bbb';
-        ctx.font = '10px League Spartan, sans-serif';
-        ctx.textAlign = 'right';
-        for (var g = 0; g <= 4; g++) {
-          var val = Math.round(maxCount - (maxCount / 4) * g);
-          var gy = pad.top + (cH / 4) * g;
-          ctx.fillText(val, pad.left - 6, gy + 4);
-        }
-      }
-
       /* ── Member Info ── */
       function renderMemberInfo() {
         if (!profile) return;
@@ -1348,7 +1131,7 @@
       var resizeTimer;
       window.addEventListener('resize', function() {
         clearTimeout(resizeTimer);
-        resizeTimer = setTimeout(function() { renderWeightChart(); renderTrend(); }, 150);
+        resizeTimer = setTimeout(function() { renderWeightChart(); }, 150);
       });
     })();
   </script>
