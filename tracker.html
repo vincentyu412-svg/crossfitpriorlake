@@ -59,6 +59,10 @@
               <option value="7">7 classes</option>
             </select>
           </label>
+          <div class="refer-name-row">
+            <label>Current Weight (lbs)<input type="number" id="tsWeight" step="0.1" min="50" max="500"></label>
+            <label>Goal Weight (lbs)<input type="number" id="tsGoalWeight" step="0.1" min="50" max="500"></label>
+          </div>
           <button type="submit" class="tracker-btn-primary"><i class="fas fa-check"></i> Start Tracking</button>
         </form>
       </div>
@@ -66,21 +70,31 @@
       <!-- Main tracker -->
       <div class="tracker-main" id="trackerMain" style="display:none;">
         <div class="tracker-welcome" id="trackerWelcome"></div>
+        <div class="tracker-quote" id="trackerQuote"></div>
 
         <!-- Stats dashboard -->
         <div class="tracker-stats-row">
           <div class="tracker-stat-box">
             <div class="tracker-stat-value" id="statTotal">0</div>
-            <div class="tracker-stat-label">Total Check-ins</div>
+            <div class="tracker-stat-label">Total Classes</div>
           </div>
           <div class="tracker-stat-box accent">
             <div class="tracker-stat-value" id="statStreak">0</div>
-            <div class="tracker-stat-label">Day Streak <i class="fas fa-fire"></i></div>
+            <div class="tracker-stat-label">Week Streak <i class="fas fa-fire"></i></div>
           </div>
           <div class="tracker-stat-box">
             <div class="tracker-stat-value" id="statBest">0</div>
             <div class="tracker-stat-label">Best Streak</div>
           </div>
+        </div>
+
+        <!-- Milestone Rewards -->
+        <div class="tracker-card tracker-milestones-card">
+          <div class="tracker-card-header">
+            <h3><i class="fas fa-trophy"></i> Milestones &amp; Rewards</h3>
+          </div>
+          <div class="tracker-milestones" id="trackerMilestones"></div>
+          <div class="tracker-milestone-next" id="milestoneNext"></div>
         </div>
 
         <!-- Weekly attendance with goal ring -->
@@ -105,12 +119,13 @@
           <button class="tracker-btn-checkin" id="trackerCheckinBtn" onclick="logCheckin()"><i class="fas fa-plus"></i> Check In Today</button>
         </div>
 
-        <!-- Weight trend -->
-        <div class="tracker-card" id="trackerWeightCard" style="display:none;">
+        <!-- Weight Journey Graph -->
+        <div class="tracker-card" id="trackerWeightCard">
           <div class="tracker-card-header">
-            <h3><i class="fas fa-weight-scale"></i> Weight Trend</h3>
+            <h3><i class="fas fa-chart-line"></i> Weight Journey</h3>
+            <button class="tracker-btn-small" onclick="editGoalWeight()"><i class="fas fa-bullseye"></i> Goal</button>
           </div>
-          <div class="tracker-weight-trend">
+          <div class="tracker-weight-summary" id="weightSummary" style="display:none;">
             <div class="tracker-weight-stat">
               <span class="tracker-weight-label">Start</span>
               <span class="tracker-weight-value" id="wtStart">—</span>
@@ -120,10 +135,22 @@
               <span class="tracker-weight-label">Current</span>
               <span class="tracker-weight-value" id="wtCurrent">—</span>
             </div>
+            <div class="tracker-weight-arrow"><i class="fas fa-arrow-right"></i></div>
+            <div class="tracker-weight-stat goal">
+              <span class="tracker-weight-label">Goal</span>
+              <span class="tracker-weight-value" id="wtGoal">—</span>
+            </div>
             <div class="tracker-weight-stat change">
-              <span class="tracker-weight-label">Change</span>
+              <span class="tracker-weight-label">Progress</span>
               <span class="tracker-weight-value" id="wtChange">—</span>
             </div>
+          </div>
+          <div class="tracker-chart-wrap">
+            <canvas id="weightChart" height="200"></canvas>
+          </div>
+          <div class="tracker-chart-empty" id="chartEmpty">
+            <i class="fas fa-chart-area"></i>
+            <p>Log your weight to see your progress graph</p>
           </div>
         </div>
 
@@ -141,10 +168,20 @@
           </form>
         </div>
 
+        <!-- Personal Records -->
+        <div class="tracker-card">
+          <div class="tracker-card-header">
+            <h3><i class="fas fa-medal"></i> Personal Records</h3>
+          </div>
+          <div class="tracker-records" id="trackerRecords">
+            <p class="tracker-empty">Start logging to unlock your records!</p>
+          </div>
+        </div>
+
         <!-- History -->
         <div class="tracker-card">
           <div class="tracker-card-header">
-            <h3><i class="fas fa-chart-line"></i> History</h3>
+            <h3><i class="fas fa-clock-rotate-left"></i> History</h3>
             <button class="tracker-btn-small" onclick="clearHistory()">Clear</button>
           </div>
           <div class="tracker-history" id="trackerHistory">
@@ -159,6 +196,9 @@
     </div>
   </div>
 
+  <!-- Confetti canvas -->
+  <canvas id="confettiCanvas" style="position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:9999;"></canvas>
+
   <script>
     if (sessionStorage.getItem('cfpl_auth') !== '1') {
       window.location.href = 'members.html';
@@ -168,17 +208,44 @@
       var profile = JSON.parse(localStorage.getItem('cfpl_tracker_profile') || 'null');
       var entries = JSON.parse(localStorage.getItem('cfpl_tracker_entries') || '[]');
 
+      var MILESTONES = [
+        { count: 25,  icon: 'fa-bottle-water', label: '25 Classes',  reward: 'Free Shaker Bottle',         color: '#3b82f6' },
+        { count: 50,  icon: 'fa-shirt',        label: '50 Classes',  reward: 'Free CFPL T-Shirt',           color: '#8b5cf6' },
+        { count: 100, icon: 'fa-star',          label: '100 Classes', reward: 'Free Month of Membership',    color: '#f59e0b' },
+        { count: 200, icon: 'fa-gem',           label: '200 Classes', reward: 'Free Personal Training Session', color: '#ef4444' }
+      ];
+
+      var QUOTES = [
+        "The only bad workout is the one that didn't happen.",
+        "You don't have to be extreme, just consistent.",
+        "Small daily improvements lead to stunning results.",
+        "Your body can stand almost anything. It's your mind you have to convince.",
+        "The hard part isn't getting your body in shape. The hard part is getting your mind in shape.",
+        "Discipline is doing what needs to be done, even when you don't want to do it.",
+        "Success isn't always about greatness. It's about consistency.",
+        "Don't count the days. Make the days count.",
+        "You're one workout away from a good mood.",
+        "Results happen over time, not overnight. Stay patient and stay consistent."
+      ];
+
       if (profile) showTracker(profile);
 
       document.getElementById('trackerSetupForm').addEventListener('submit', function(e) {
         e.preventDefault();
+        var startWeight = parseFloat(document.getElementById('tsWeight').value) || null;
         profile = {
           firstName: document.getElementById('tsFirstName').value.trim(),
           lastName: document.getElementById('tsLastName').value.trim(),
           phone: document.getElementById('tsPhone').value.trim(),
-          weeklyGoal: parseInt(document.getElementById('tsGoal').value) || 4
+          weeklyGoal: parseInt(document.getElementById('tsGoal').value) || 4,
+          goalWeight: parseFloat(document.getElementById('tsGoalWeight').value) || null
         };
         localStorage.setItem('cfpl_tracker_profile', JSON.stringify(profile));
+        // Log starting weight if provided
+        if (startWeight) {
+          entries.push({ type: 'log', date: new Date().toISOString(), weight: startWeight, mood: null });
+          localStorage.setItem('cfpl_tracker_entries', JSON.stringify(entries));
+        }
         showTracker(profile);
       });
 
@@ -198,82 +265,153 @@
       function showTracker(p) {
         document.getElementById('trackerSetup').style.display = 'none';
         document.getElementById('trackerMain').style.display = 'block';
-        document.getElementById('trackerWelcome').textContent = 'Hey ' + p.firstName + '! Keep showing up.';
+
+        // Time-of-day greeting
+        var h = new Date().getHours();
+        var greeting = h < 12 ? 'Good morning' : h < 17 ? 'Good afternoon' : 'Good evening';
+        document.getElementById('trackerWelcome').textContent = greeting + ', ' + p.firstName + '!';
+
+        // Random quote
+        document.getElementById('trackerQuote').textContent = '"' + QUOTES[Math.floor(Math.random() * QUOTES.length)] + '"';
+
         document.getElementById('trackerGoalDisplay').textContent = p.weeklyGoal || 4;
         renderAll();
       }
 
       function renderAll() {
         renderStats();
+        renderMilestones();
         renderWeek();
-        renderWeightTrend();
+        renderWeightChart();
+        renderRecords();
         renderHistory();
       }
 
-      /* --- Stats --- */
+      /* ── Stats ── */
       function renderStats() {
         var totalCheckins = entries.filter(function(e) { return e.type === 'checkin'; }).length;
         document.getElementById('statTotal').textContent = totalCheckins;
 
-        var streaks = calcStreaks();
+        var streaks = calcWeekStreaks();
         document.getElementById('statStreak').textContent = streaks.current;
         document.getElementById('statBest').textContent = streaks.best;
       }
 
-      function calcStreaks() {
+      function getWeekStart(d) {
+        var dt = new Date(d); dt.setHours(0,0,0,0);
+        var day = dt.getDay(); var diff = day === 0 ? 6 : day - 1;
+        dt.setDate(dt.getDate() - diff);
+        return dt;
+      }
+
+      function calcWeekStreaks() {
+        var goal = (profile && profile.weeklyGoal) || 4;
         var checkins = entries.filter(function(e) { return e.type === 'checkin'; });
         if (checkins.length === 0) return { current: 0, best: 0 };
 
-        // Get unique check-in dates as YYYY-MM-DD
-        var dateSet = {};
+        // Group check-ins by week (Mon-Sun), using week start as key
+        var weekMap = {};
         checkins.forEach(function(c) {
+          var ws = getWeekStart(new Date(c.date));
+          var key = ws.toISOString().slice(0,10);
+          if (!weekMap[key]) weekMap[key] = new Set();
           var d = new Date(c.date);
-          dateSet[d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0')] = true;
+          weekMap[key].add(d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0'));
         });
-        var dates = Object.keys(dateSet).sort().reverse();
 
-        // Current streak — must include today or yesterday
-        var today = new Date(); today.setHours(0,0,0,0);
-        var yesterday = new Date(today); yesterday.setDate(yesterday.getDate() - 1);
-        var todayStr = today.getFullYear() + '-' + String(today.getMonth()+1).padStart(2,'0') + '-' + String(today.getDate()).padStart(2,'0');
-        var yestStr = yesterday.getFullYear() + '-' + String(yesterday.getMonth()+1).padStart(2,'0') + '-' + String(yesterday.getDate()).padStart(2,'0');
+        // Determine which weeks met the goal
+        var weekKeys = Object.keys(weekMap).sort();
+        var metGoal = {};
+        weekKeys.forEach(function(k) { metGoal[k] = weekMap[k].size >= goal; });
+
+        // Current streak: walk backwards from current/last week
+        var thisWeek = getWeekStart(new Date()).toISOString().slice(0,10);
+        var lastWeek = new Date(getWeekStart(new Date())); lastWeek.setDate(lastWeek.getDate() - 7);
+        var lastWeekKey = lastWeek.toISOString().slice(0,10);
+
+        // Current week is in progress — include it if goal already met, otherwise start from last week
+        var startKey = metGoal[thisWeek] ? thisWeek : (metGoal[lastWeekKey] ? lastWeekKey : null);
 
         var current = 0;
-        if (dateSet[todayStr] || dateSet[yestStr]) {
-          var startStr = dateSet[todayStr] ? todayStr : yestStr;
-          var d = new Date(startStr + 'T00:00:00');
+        if (startKey) {
+          var wk = new Date(startKey + 'T00:00:00');
           while (true) {
-            var key = d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
-            if (!dateSet[key]) break;
+            var key = wk.toISOString().slice(0,10);
+            if (!metGoal[key]) break;
             current++;
-            d.setDate(d.getDate() - 1);
+            wk.setDate(wk.getDate() - 7);
           }
         }
 
         // Best streak
-        var allSorted = Object.keys(dateSet).sort();
-        var best = 1, run = 1;
-        for (var i = 1; i < allSorted.length; i++) {
-          var prev = new Date(allSorted[i-1] + 'T00:00:00');
-          var curr = new Date(allSorted[i] + 'T00:00:00');
-          if (curr - prev === 86400000) { run++; } else { run = 1; }
-          if (run > best) best = run;
+        var best = 0, run = 0;
+        for (var i = 0; i < weekKeys.length; i++) {
+          if (metGoal[weekKeys[i]]) {
+            run++;
+            if (run > best) best = run;
+          } else {
+            // Check gap - if there's a missing week between entries, break the run
+            run = 0;
+          }
+          // Also check for week gaps
+          if (i > 0) {
+            var prev = new Date(weekKeys[i-1] + 'T00:00:00');
+            var curr = new Date(weekKeys[i] + 'T00:00:00');
+            if (curr - prev > 7 * 86400000 + 1) {
+              if (!metGoal[weekKeys[i]]) run = 0;
+              else run = 1;
+            }
+          }
         }
-        if (allSorted.length === 0) best = 0;
 
         return { current: current, best: best };
       }
 
-      /* --- Week + Ring --- */
-      function getWeekStart() {
-        var d = new Date(); d.setHours(0,0,0,0);
-        var day = d.getDay(); var diff = day === 0 ? 6 : day - 1;
-        d.setDate(d.getDate() - diff);
-        return d;
+      /* ── Milestones ── */
+      function renderMilestones() {
+        var total = entries.filter(function(e) { return e.type === 'checkin'; }).length;
+        var prevTotal = total - (entries.length > 0 && entries[entries.length-1].type === 'checkin' ? 1 : 0);
+        var container = document.getElementById('trackerMilestones');
+        var nextEl = document.getElementById('milestoneNext');
+
+        var html = '';
+        var nextMilestone = null;
+        MILESTONES.forEach(function(m) {
+          var reached = total >= m.count;
+          var justReached = reached && prevTotal < m.count;
+          html += '<div class="tracker-milestone' + (reached ? ' reached' : '') + '">';
+          html += '<div class="tracker-milestone-icon" style="' + (reached ? 'background:' + m.color : 'background:#e5e7eb') + '">';
+          html += '<i class="fas ' + m.icon + '"></i></div>';
+          html += '<div class="tracker-milestone-info">';
+          html += '<div class="tracker-milestone-label">' + m.label + '</div>';
+          html += '<div class="tracker-milestone-reward">' + m.reward + (reached ? ' <i class="fas fa-check-circle"></i>' : '') + '</div>';
+          html += '</div>';
+          if (reached) {
+            html += '<div class="tracker-milestone-badge">UNLOCKED</div>';
+          } else {
+            html += '<div class="tracker-milestone-remaining">' + (m.count - total) + ' to go</div>';
+          }
+          html += '</div>';
+
+          if (justReached) {
+            setTimeout(function() { fireConfetti(); }, 300);
+          }
+          if (!reached && !nextMilestone) nextMilestone = m;
+        });
+        container.innerHTML = html;
+
+        if (nextMilestone) {
+          var pct = Math.round((total / nextMilestone.count) * 100);
+          nextEl.innerHTML = '<div class="tracker-next-bar"><div class="tracker-next-fill" style="width:' + pct + '%"></div></div>' +
+            '<div class="tracker-next-text">' + total + ' / ' + nextMilestone.count + ' — ' + nextMilestone.reward + '</div>';
+        } else {
+          nextEl.innerHTML = '<div class="tracker-next-text" style="color:#f59e0b;"><i class="fas fa-crown"></i> All milestones unlocked — legend status!</div>';
+        }
       }
 
+      /* ── Week + Ring ── */
       function renderWeek() {
-        var ws = getWeekStart();
+        var ws = getWeekStart(new Date());
         var days = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
         var checkins = entries.filter(function(e) { return e.type === 'checkin' && new Date(e.date) >= ws; });
         var checkinDays = {};
@@ -292,13 +430,11 @@
         }
         document.getElementById('trackerWeekCount').textContent = count;
 
-        // Update ring
         var goal = (profile && profile.weeklyGoal) || 4;
         var pct = Math.min(count / goal, 1);
-        var circumference = 2 * Math.PI * 42; // ~263.89
+        var circumference = 2 * Math.PI * 42;
         document.getElementById('trackerRing').style.strokeDashoffset = circumference * (1 - pct);
 
-        // Check-in button state
         var today = new Date(); today.setHours(0,0,0,0);
         var alreadyCheckedIn = checkins.some(function(c) {
           var cd = new Date(c.date); cd.setHours(0,0,0,0);
@@ -316,22 +452,229 @@
         }
       }
 
-      /* --- Weight Trend --- */
-      function renderWeightTrend() {
+      /* ── Weight Chart ── */
+      function renderWeightChart() {
         var logs = entries.filter(function(e) { return e.type === 'log' && e.weight; });
-        var card = document.getElementById('trackerWeightCard');
-        if (logs.length === 0) { card.style.display = 'none'; return; }
-        card.style.display = '';
+        var goalWeight = profile && profile.goalWeight;
+        var summary = document.getElementById('weightSummary');
+        var chartEmpty = document.getElementById('chartEmpty');
+        var canvas = document.getElementById('weightChart');
+
+        if (logs.length === 0) {
+          summary.style.display = 'none';
+          chartEmpty.style.display = '';
+          canvas.style.display = 'none';
+          return;
+        }
+
+        summary.style.display = '';
+        canvas.style.display = '';
+        chartEmpty.style.display = 'none';
 
         var first = logs[0].weight;
         var last = logs[logs.length - 1].weight;
-        var diff = last - first;
         document.getElementById('wtStart').textContent = first + ' lbs';
         document.getElementById('wtCurrent').textContent = last + ' lbs';
-        var changeEl = document.getElementById('wtChange');
-        var sign = diff > 0 ? '+' : '';
-        changeEl.textContent = sign + diff.toFixed(1) + ' lbs';
-        changeEl.className = 'tracker-weight-value ' + (diff < 0 ? 'down' : diff > 0 ? 'up' : '');
+
+        if (goalWeight) {
+          document.getElementById('wtGoal').textContent = goalWeight + ' lbs';
+          var totalToLose = first - goalWeight;
+          var lost = first - last;
+          if (totalToLose !== 0) {
+            var pctDone = Math.round((lost / totalToLose) * 100);
+            pctDone = Math.max(0, Math.min(pctDone, 999));
+            document.getElementById('wtChange').textContent = pctDone + '% there';
+            document.getElementById('wtChange').className = 'tracker-weight-value ' + (lost > 0 ? 'down' : lost < 0 ? 'up' : '');
+          } else {
+            document.getElementById('wtChange').textContent = 'At goal!';
+            document.getElementById('wtChange').className = 'tracker-weight-value down';
+          }
+        } else {
+          document.getElementById('wtGoal').textContent = '—';
+          var diff = last - first;
+          var sign = diff > 0 ? '+' : '';
+          document.getElementById('wtChange').textContent = sign + diff.toFixed(1) + ' lbs';
+          document.getElementById('wtChange').className = 'tracker-weight-value ' + (diff < 0 ? 'down' : diff > 0 ? 'up' : '');
+        }
+
+        // Draw chart
+        var ctx = canvas.getContext('2d');
+        var dpr = window.devicePixelRatio || 1;
+        var rect = canvas.parentElement.getBoundingClientRect();
+        canvas.width = rect.width * dpr;
+        canvas.height = 200 * dpr;
+        canvas.style.width = rect.width + 'px';
+        canvas.style.height = '200px';
+        ctx.scale(dpr, dpr);
+
+        var W = rect.width;
+        var H = 200;
+        var pad = { top: 20, right: 16, bottom: 30, left: 44 };
+        var cW = W - pad.left - pad.right;
+        var cH = H - pad.top - pad.bottom;
+
+        var weights = logs.map(function(l) { return l.weight; });
+        var allVals = weights.slice();
+        if (goalWeight) allVals.push(goalWeight);
+        var minW = Math.min.apply(null, allVals) - 3;
+        var maxW = Math.max.apply(null, allVals) + 3;
+        if (maxW === minW) { maxW += 5; minW -= 5; }
+
+        ctx.clearRect(0, 0, W, H);
+
+        // Grid lines
+        ctx.strokeStyle = '#f0f0f0';
+        ctx.lineWidth = 1;
+        var gridCount = 4;
+        for (var g = 0; g <= gridCount; g++) {
+          var gy = pad.top + (cH / gridCount) * g;
+          ctx.beginPath(); ctx.moveTo(pad.left, gy); ctx.lineTo(W - pad.right, gy); ctx.stroke();
+          var gVal = maxW - ((maxW - minW) / gridCount) * g;
+          ctx.fillStyle = '#bbb';
+          ctx.font = '11px League Spartan, sans-serif';
+          ctx.textAlign = 'right';
+          ctx.fillText(Math.round(gVal), pad.left - 8, gy + 4);
+        }
+
+        // Goal weight dashed line
+        if (goalWeight && goalWeight >= minW && goalWeight <= maxW) {
+          var goalY = pad.top + cH - ((goalWeight - minW) / (maxW - minW)) * cH;
+          ctx.setLineDash([6, 4]);
+          ctx.strokeStyle = '#f59e0b';
+          ctx.lineWidth = 2;
+          ctx.beginPath(); ctx.moveTo(pad.left, goalY); ctx.lineTo(W - pad.right, goalY); ctx.stroke();
+          ctx.setLineDash([]);
+          ctx.fillStyle = '#f59e0b';
+          ctx.font = 'bold 11px League Spartan, sans-serif';
+          ctx.textAlign = 'left';
+          ctx.fillText('GOAL', W - pad.right - 32, goalY - 6);
+        }
+
+        // Data line
+        if (logs.length > 1) {
+          var points = [];
+          for (var i = 0; i < logs.length; i++) {
+            var x = pad.left + (i / (logs.length - 1)) * cW;
+            var y = pad.top + cH - ((logs[i].weight - minW) / (maxW - minW)) * cH;
+            points.push({ x: x, y: y });
+          }
+
+          // Gradient fill under line
+          var grad = ctx.createLinearGradient(0, pad.top, 0, H - pad.bottom);
+          grad.addColorStop(0, 'rgba(58, 123, 213, 0.15)');
+          grad.addColorStop(1, 'rgba(58, 123, 213, 0.01)');
+          ctx.fillStyle = grad;
+          ctx.beginPath();
+          ctx.moveTo(points[0].x, H - pad.bottom);
+          ctx.lineTo(points[0].x, points[0].y);
+          for (var i = 1; i < points.length; i++) {
+            ctx.lineTo(points[i].x, points[i].y);
+          }
+          ctx.lineTo(points[points.length-1].x, H - pad.bottom);
+          ctx.closePath();
+          ctx.fill();
+
+          // Line
+          ctx.strokeStyle = 'var(--blue, #3a7bd5)';
+          ctx.lineWidth = 2.5;
+          ctx.lineJoin = 'round';
+          ctx.beginPath();
+          ctx.moveTo(points[0].x, points[0].y);
+          for (var i = 1; i < points.length; i++) {
+            ctx.lineTo(points[i].x, points[i].y);
+          }
+          ctx.stroke();
+
+          // Dots
+          points.forEach(function(p, idx) {
+            ctx.beginPath();
+            ctx.arc(p.x, p.y, 4, 0, Math.PI * 2);
+            ctx.fillStyle = idx === points.length - 1 ? '#3a7bd5' : '#fff';
+            ctx.fill();
+            ctx.strokeStyle = '#3a7bd5';
+            ctx.lineWidth = 2;
+            ctx.stroke();
+          });
+
+          // X-axis date labels (first and last)
+          ctx.fillStyle = '#bbb';
+          ctx.font = '10px Open Sans, sans-serif';
+          ctx.textAlign = 'center';
+          var firstDate = new Date(logs[0].date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+          var lastDate = new Date(logs[logs.length-1].date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+          ctx.fillText(firstDate, points[0].x, H - 8);
+          ctx.fillText(lastDate, points[points.length-1].x, H - 8);
+        } else {
+          // Single point
+          var x = pad.left + cW / 2;
+          var y = pad.top + cH / 2;
+          ctx.beginPath();
+          ctx.arc(x, y, 6, 0, Math.PI * 2);
+          ctx.fillStyle = '#3a7bd5';
+          ctx.fill();
+          ctx.fillStyle = '#666';
+          ctx.font = '12px Open Sans, sans-serif';
+          ctx.textAlign = 'center';
+          ctx.fillText(logs[0].weight + ' lbs', x, y - 14);
+        }
+      }
+
+      /* ── Personal Records ── */
+      function renderRecords() {
+        var container = document.getElementById('trackerRecords');
+        var checkins = entries.filter(function(e) { return e.type === 'checkin'; });
+        var logs = entries.filter(function(e) { return e.type === 'log'; });
+
+        if (checkins.length === 0 && logs.length === 0) {
+          container.innerHTML = '<p class="tracker-empty">Start logging to unlock your records!</p>';
+          return;
+        }
+
+        var records = [];
+        if (checkins.length > 0) {
+          records.push({ icon: 'fa-calendar-check', label: 'Total Classes', value: checkins.length, color: '#16a34a' });
+
+          // Best single week
+          var weekMap = {};
+          checkins.forEach(function(c) {
+            var ws = getWeekStart(new Date(c.date)).toISOString().slice(0,10);
+            weekMap[ws] = (weekMap[ws] || 0) + 1;
+          });
+          var bestWeek = Math.max.apply(null, Object.values(weekMap));
+          records.push({ icon: 'fa-bolt', label: 'Best Week', value: bestWeek + ' classes', color: '#f59e0b' });
+
+          var streaks = calcWeekStreaks();
+          records.push({ icon: 'fa-fire', label: 'Best Week Streak', value: streaks.best + (streaks.best === 1 ? ' week' : ' weeks'), color: '#ef4444' });
+        }
+
+        var weightLogs = logs.filter(function(l) { return l.weight; });
+        if (weightLogs.length >= 2) {
+          var maxLoss = 0;
+          for (var i = 1; i < weightLogs.length; i++) {
+            var change = weightLogs[0].weight - weightLogs[i].weight;
+            if (change > maxLoss) maxLoss = change;
+          }
+          if (maxLoss > 0) {
+            records.push({ icon: 'fa-arrow-trend-down', label: 'Most Weight Lost', value: maxLoss.toFixed(1) + ' lbs', color: '#3b82f6' });
+          }
+        }
+
+        var moodLogs = logs.filter(function(l) { return l.mood; });
+        if (moodLogs.length > 0) {
+          var bestMood = Math.max.apply(null, moodLogs.map(function(l) { return l.mood; }));
+          records.push({ icon: 'fa-face-smile', label: 'Best Mood', value: bestMood + ' / 10', color: '#8b5cf6' });
+        }
+
+        var html = '<div class="tracker-records-grid">';
+        records.forEach(function(r) {
+          html += '<div class="tracker-record">';
+          html += '<div class="tracker-record-icon" style="background:' + r.color + '"><i class="fas ' + r.icon + '"></i></div>';
+          html += '<div class="tracker-record-value">' + r.value + '</div>';
+          html += '<div class="tracker-record-label">' + r.label + '</div>';
+          html += '</div>';
+        });
+        html += '</div>';
+        container.innerHTML = html;
       }
 
       window.logCheckin = function() {
@@ -351,14 +694,14 @@
         var html = '';
         sorted.forEach(function(e) {
           var d = new Date(e.date);
-          var dateStr = d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+          var dateStr = d.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
           if (e.type === 'checkin') {
             html += '<div class="tracker-history-item checkin"><span class="tracker-history-icon"><i class="fas fa-check-circle"></i></span><span>Class check-in</span><span class="tracker-history-date">' + dateStr + '</span></div>';
           } else {
             var parts = [];
             if (e.weight) parts.push(e.weight + ' lbs');
             if (e.mood) parts.push('Feeling: ' + e.mood + '/10');
-            html += '<div class="tracker-history-item log"><span class="tracker-history-icon"><i class="fas fa-pen"></i></span><span>' + parts.join(' · ') + '</span><span class="tracker-history-date">' + dateStr + '</span></div>';
+            html += '<div class="tracker-history-item log"><span class="tracker-history-icon"><i class="fas fa-pen"></i></span><span>' + parts.join(' &middot; ') + '</span><span class="tracker-history-date">' + dateStr + '</span></div>';
           }
         });
         container.innerHTML = html;
@@ -373,7 +716,18 @@
         profile.weeklyGoal = val;
         localStorage.setItem('cfpl_tracker_profile', JSON.stringify(profile));
         document.getElementById('trackerGoalDisplay').textContent = val;
-        renderWeek();
+        renderAll();
+      };
+
+      window.editGoalWeight = function() {
+        var current = (profile && profile.goalWeight) || '';
+        var val = prompt('Set your goal weight (lbs):', current);
+        if (val === null) return;
+        val = parseFloat(val);
+        if (isNaN(val) || val < 50 || val > 500) { alert('Please enter a weight between 50 and 500 lbs.'); return; }
+        profile.goalWeight = val;
+        localStorage.setItem('cfpl_tracker_profile', JSON.stringify(profile));
+        renderWeightChart();
       };
 
       window.clearHistory = function() {
@@ -382,6 +736,63 @@
         localStorage.removeItem('cfpl_tracker_entries');
         renderAll();
       };
+
+      /* ── Confetti ── */
+      function fireConfetti() {
+        var canvas = document.getElementById('confettiCanvas');
+        var ctx = canvas.getContext('2d');
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+        var particles = [];
+        var colors = ['#f59e0b','#3b82f6','#ef4444','#16a34a','#8b5cf6','#ec4899','#f97316'];
+        for (var i = 0; i < 120; i++) {
+          particles.push({
+            x: window.innerWidth / 2 + (Math.random() - 0.5) * 200,
+            y: window.innerHeight / 2,
+            vx: (Math.random() - 0.5) * 16,
+            vy: Math.random() * -18 - 4,
+            w: Math.random() * 10 + 4,
+            h: Math.random() * 6 + 3,
+            color: colors[Math.floor(Math.random() * colors.length)],
+            rot: Math.random() * 360,
+            rotV: (Math.random() - 0.5) * 12,
+            life: 1
+          });
+        }
+        var frame = 0;
+        function animate() {
+          ctx.clearRect(0, 0, canvas.width, canvas.height);
+          var alive = false;
+          particles.forEach(function(p) {
+            if (p.life <= 0) return;
+            alive = true;
+            p.x += p.vx;
+            p.y += p.vy;
+            p.vy += 0.45;
+            p.vx *= 0.99;
+            p.rot += p.rotV;
+            p.life -= 0.012;
+            ctx.save();
+            ctx.translate(p.x, p.y);
+            ctx.rotate(p.rot * Math.PI / 180);
+            ctx.globalAlpha = Math.max(0, p.life);
+            ctx.fillStyle = p.color;
+            ctx.fillRect(-p.w/2, -p.h/2, p.w, p.h);
+            ctx.restore();
+          });
+          frame++;
+          if (alive && frame < 200) requestAnimationFrame(animate);
+          else ctx.clearRect(0, 0, canvas.width, canvas.height);
+        }
+        animate();
+      }
+
+      // Re-render chart on resize
+      var resizeTimer;
+      window.addEventListener('resize', function() {
+        clearTimeout(resizeTimer);
+        resizeTimer = setTimeout(function() { renderWeightChart(); }, 150);
+      });
     })();
   </script>
 </body>
