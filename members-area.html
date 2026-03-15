@@ -38,7 +38,6 @@
       <a href="index.html" class="members-area-logo"><img src="images/logo.webp" alt="CrossFit Prior Lake"></a>
       <h1 class="members-area-heading">Members Area</h1>
       <p class="members-area-sub">View this week's class schedule below.</p>
-      <button class="members-signout-btn" onclick="signOut()"><i class="fas fa-right-from-bracket"></i> Sign Out</button>
     </div>
 
     <!-- Refer a Friend Banner -->
@@ -108,24 +107,13 @@
     <p class="members-area-sub"><a href="https://drive.google.com/drive/folders/1n11GgbxBYTU2CswyBfxz4XaDeVoaTISQ" target="_blank" rel="noopener noreferrer" style="color:var(--blue);text-decoration:underline;">View Workouts <i class="fas fa-external-link-alt"></i></a></p>
 
     <div class="members-area-footer">
-      <button class="members-signout-link" onclick="signOut()"><i class="fas fa-right-from-bracket"></i> Sign Out</button>
       <a href="index.html" class="login-return">RETURN BACK TO WEBSITE</a>
     </div>
   </div>
 
-  <!-- Firebase SDK -->
-  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
-  <script src="js/firebase-config.js"></script>
-
   <script>
-    // Require login — redirect to login page if not authenticated
-    requireAuth();
-
-    function signOut() {
-      auth.signOut().then(function() {
-        window.location.href = 'members.html';
-      });
+    if (sessionStorage.getItem('cfpl_auth') !== '1') {
+      window.location.href = 'members.html';
     }
 
     async function submitReferral(e) {

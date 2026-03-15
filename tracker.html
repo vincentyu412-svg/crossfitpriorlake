@@ -41,8 +41,37 @@
     <div class="tracker-section">
       <h2 class="tracker-heading"><i class="fas fa-bullseye"></i> My Tracker</h2>
 
+      <!-- Tracker Login -->
+      <div class="tracker-auth" id="trackerAuth">
+        <div class="login-card" style="margin:0 auto 24px;">
+          <h3 class="login-heading" id="tAuthHeading" style="font-size:1.4rem;">Sign in to your Tracker</h3>
+          <p class="login-sub" id="tAuthSub">Log in or create an account to sync your progress across devices.</p>
+          <form class="login-form" id="tLoginForm">
+            <input type="email" id="tLoginEmail" placeholder="Email address" required autocomplete="email">
+            <input type="password" id="tLoginPassword" placeholder="Password" required autocomplete="current-password">
+            <p class="login-error" id="tLoginError"></p>
+            <button type="submit" class="login-btn" id="tLoginBtn">SIGN IN</button>
+          </form>
+          <form class="login-form" id="tRegForm" style="display:none;">
+            <input type="text" id="tRegName" placeholder="Full name" required autocomplete="name">
+            <input type="email" id="tRegEmail" placeholder="Email address" required autocomplete="email">
+            <input type="password" id="tRegPassword" placeholder="Create password (min 6 characters)" required minlength="6" autocomplete="new-password">
+            <input type="password" id="tRegConfirm" placeholder="Confirm password" required minlength="6" autocomplete="new-password">
+            <p class="login-error" id="tRegError"></p>
+            <button type="submit" class="login-btn" id="tRegBtn">CREATE ACCOUNT</button>
+          </form>
+          <div class="login-toggle">
+            <span id="tToggleText">Don't have an account?</span>
+            <button type="button" class="login-toggle-btn" id="tToggleBtn">Create one</button>
+          </div>
+          <div class="login-forgot">
+            <button type="button" class="login-forgot-btn" id="tForgotBtn">Forgot password?</button>
+          </div>
+        </div>
+      </div>
+
       <!-- Setup screen -->
-      <div class="tracker-setup" id="trackerSetup">
+      <div class="tracker-setup" id="trackerSetup" style="display:none;">
         <p class="tracker-setup-text">Set up your tracker to log check-ins, track weight, and stay accountable.</p>
         <form class="tracker-setup-form" id="trackerSetupForm">
           <div class="refer-name-row">
@@ -282,14 +311,114 @@
   <script src="js/firebase-config.js"></script>
 
   <script>
-    requireAuth(function(user) {
-      var docRef = db.collection('users').doc(user.uid);
+    (function() {
+      var auth = firebase.auth();
+      var db = firebase.firestore();
+      var currentUser = null;
+      var docRef = null;
       var profile = null;
       var entries = [];
+      var isLogin = true;
 
       function saveData() {
-        docRef.set({ profile: profile, entries: entries });
+        if (docRef) docRef.set({ profile: profile, entries: entries });
       }
+
+      // Friendly error messages
+      function friendlyError(code) {
+        switch (code) {
+          case 'auth/invalid-email': return 'Please enter a valid email address.';
+          case 'auth/user-disabled': return 'This account has been disabled.';
+          case 'auth/user-not-found': return 'No account found with that email.';
+          case 'auth/wrong-password': return 'Incorrect password. Please try again.';
+          case 'auth/invalid-credential': return 'Incorrect email or password.';
+          case 'auth/email-already-in-use': return 'An account with this email already exists.';
+          case 'auth/weak-password': return 'Password must be at least 6 characters.';
+          case 'auth/too-many-requests': return 'Too many attempts. Please wait a moment.';
+          default: return 'Something went wrong. Please try again.';
+        }
+      }
+
+      function initTracker(user) {
+        currentUser = user;
+        docRef = db.collection('users').doc(user.uid);
+        document.getElementById('trackerAuth').style.display = 'none';
+        document.getElementById('trackerSetup').style.display = '';
+        docRef.get().then(function(doc) {
+          if (doc.exists) {
+            var data = doc.data();
+            profile = data.profile || null;
+            entries = data.entries || [];
+          }
+          if (profile) showTracker(profile);
+        });
+      }
+
+      // Check if already signed in
+      auth.onAuthStateChanged(function(user) {
+        if (user) initTracker(user);
+      });
+
+      // Toggle login/register
+      document.getElementById('tToggleBtn').addEventListener('click', function() {
+        isLogin = !isLogin;
+        document.getElementById('tLoginForm').style.display = isLogin ? '' : 'none';
+        document.getElementById('tRegForm').style.display = isLogin ? 'none' : '';
+        document.getElementById('tAuthHeading').textContent = isLogin ? 'Sign in to your Tracker' : 'Create your Tracker account';
+        document.getElementById('tAuthSub').textContent = isLogin ? 'Log in or create an account to sync your progress across devices.' : 'Create an account to track your progress from any device.';
+        document.getElementById('tToggleText').textContent = isLogin ? "Don't have an account?" : 'Already have an account?';
+        document.getElementById('tToggleBtn').textContent = isLogin ? 'Create one' : 'Sign in';
+        document.getElementById('tForgotBtn').style.display = isLogin ? '' : 'none';
+        document.getElementById('tLoginError').style.display = 'none';
+        document.getElementById('tRegError').style.display = 'none';
+      });
+
+      // Login
+      document.getElementById('tLoginForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        var email = document.getElementById('tLoginEmail').value.trim();
+        var password = document.getElementById('tLoginPassword').value;
+        var btn = document.getElementById('tLoginBtn');
+        var err = document.getElementById('tLoginError');
+        err.style.display = 'none';
+        btn.disabled = true; btn.textContent = 'SIGNING IN...';
+        auth.signInWithEmailAndPassword(email, password)
+          .then(function(cred) { initTracker(cred.user); })
+          .catch(function(error) {
+            err.textContent = friendlyError(error.code); err.style.display = 'block';
+            btn.disabled = false; btn.textContent = 'SIGN IN';
+          });
+      });
+
+      // Register
+      document.getElementById('tRegForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        var name = document.getElementById('tRegName').value.trim();
+        var email = document.getElementById('tRegEmail').value.trim();
+        var password = document.getElementById('tRegPassword').value;
+        var confirm = document.getElementById('tRegConfirm').value;
+        var btn = document.getElementById('tRegBtn');
+        var err = document.getElementById('tRegError');
+        err.style.display = 'none';
+        if (password !== confirm) { err.textContent = 'Passwords do not match.'; err.style.display = 'block'; return; }
+        btn.disabled = true; btn.textContent = 'CREATING ACCOUNT...';
+        auth.createUserWithEmailAndPassword(email, password)
+          .then(function(cred) { return cred.user.updateProfile({ displayName: name }).then(function() { initTracker(cred.user); }); })
+          .catch(function(error) {
+            err.textContent = friendlyError(error.code); err.style.display = 'block';
+            btn.disabled = false; btn.textContent = 'CREATE ACCOUNT';
+          });
+      });
+
+      // Forgot password
+      document.getElementById('tForgotBtn').addEventListener('click', function() {
+        var email = document.getElementById('tLoginEmail').value.trim();
+        var err = document.getElementById('tLoginError');
+        if (!email) { err.textContent = 'Enter your email above, then click "Forgot password?"'; err.style.display = 'block'; return; }
+        auth.sendPasswordResetEmail(email)
+          .then(function() { err.textContent = 'Password reset email sent! Check your inbox.'; err.style.display = 'block'; err.style.color = '#16a34a'; })
+          .catch(function(error) { err.textContent = friendlyError(error.code); err.style.display = 'block'; err.style.color = ''; });
+      });
 
       var MILESTONES = [
         { count: 50,  icon: 'fa-shirt',    label: '50 Classes',  reward: 'Free CFPL Merch',                color: '#3b82f6' },
@@ -309,16 +438,6 @@
         "You're one workout away from a good mood.",
         "Results happen over time, not overnight. Stay patient and stay consistent."
       ];
-
-      // Load data from Firestore, then initialize UI
-      docRef.get().then(function(doc) {
-        if (doc.exists) {
-          var data = doc.data();
-          profile = data.profile || null;
-          entries = data.entries || [];
-        }
-        if (profile) showTracker(profile);
-      });
 
       document.getElementById('trackerSetupForm').addEventListener('submit', function(e) {
         e.preventDefault();
@@ -1172,7 +1291,7 @@
         clearTimeout(resizeTimer);
         resizeTimer = setTimeout(function() { renderWeightChart(); renderTrend(); }, 150);
       });
-    });
+    })();
   </script>
 </body>
 </html>
