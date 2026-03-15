@@ -81,6 +81,8 @@
           <label>Phone<input type="tel" id="tsPhone" required></label>
           <label>Weekly Goal (classes per week)
             <select id="tsGoal">
+              <option value="1">1 class</option>
+              <option value="2">2 classes</option>
               <option value="3">3 classes</option>
               <option value="4" selected>4 classes</option>
               <option value="5">5 classes</option>
@@ -138,6 +140,8 @@
             <label class="tracker-inline-label">Weekly class goal</label>
             <div class="tracker-inline-row">
               <select id="goalEditorSelect" class="tracker-inline-select">
+                <option value="1">1 class</option>
+                <option value="2">2 classes</option>
                 <option value="3">3 classes</option>
                 <option value="4">4 classes</option>
                 <option value="5">5 classes</option>
@@ -959,7 +963,7 @@
 
       window.saveGoal = function() {
         var val = parseInt(document.getElementById('goalEditorSelect').value);
-        if (val < 3 || val > 7 || isNaN(val)) return;
+        if (val < 1 || val > 7 || isNaN(val)) return;
         profile.weeklyGoal = val;
         saveData();
         document.getElementById('trackerGoalDisplay').textContent = val;
