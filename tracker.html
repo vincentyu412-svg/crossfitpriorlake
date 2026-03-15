@@ -154,39 +154,15 @@
           </div>
         </div>
 
-        <!-- Log weight & mood -->
+        <!-- Log weight -->
         <div class="tracker-card">
           <div class="tracker-card-header">
-            <h3><i class="fas fa-pen"></i> Log Progress</h3>
+            <h3><i class="fas fa-pen"></i> Log Weight</h3>
           </div>
           <form class="tracker-log-form" id="trackerLogForm">
-            <div class="refer-name-row">
-              <label>Weight (lbs)<input type="number" id="tlWeight" step="0.1" min="50" max="500"></label>
-              <label>How do you feel? (1–10)<input type="number" id="tlMood" min="1" max="10"></label>
-            </div>
+            <label>Weight (lbs)<input type="number" id="tlWeight" step="0.1" min="50" max="500" required></label>
             <button type="submit" class="tracker-btn-primary"><i class="fas fa-save"></i> Save Entry</button>
           </form>
-        </div>
-
-        <!-- Personal Records -->
-        <div class="tracker-card">
-          <div class="tracker-card-header">
-            <h3><i class="fas fa-medal"></i> Personal Records</h3>
-          </div>
-          <div class="tracker-records" id="trackerRecords">
-            <p class="tracker-empty">Start logging to unlock your records!</p>
-          </div>
-        </div>
-
-        <!-- History -->
-        <div class="tracker-card">
-          <div class="tracker-card-header">
-            <h3><i class="fas fa-clock-rotate-left"></i> History</h3>
-            <button class="tracker-btn-small" onclick="clearHistory()">Clear</button>
-          </div>
-          <div class="tracker-history" id="trackerHistory">
-            <p class="tracker-empty">No entries yet — start logging!</p>
-          </div>
         </div>
       </div>
     </div>
@@ -209,10 +185,9 @@
       var entries = JSON.parse(localStorage.getItem('cfpl_tracker_entries') || '[]');
 
       var MILESTONES = [
-        { count: 25,  icon: 'fa-bottle-water', label: '25 Classes',  reward: 'Free Shaker Bottle',         color: '#3b82f6' },
-        { count: 50,  icon: 'fa-shirt',        label: '50 Classes',  reward: 'Free CFPL T-Shirt',           color: '#8b5cf6' },
-        { count: 100, icon: 'fa-star',          label: '100 Classes', reward: 'Free Month of Membership',    color: '#f59e0b' },
-        { count: 200, icon: 'fa-gem',           label: '200 Classes', reward: 'Free Personal Training Session', color: '#ef4444' }
+        { count: 100, icon: 'fa-tag',   label: '100 Classes', reward: '$10 Off Next Month',              color: '#3b82f6' },
+        { count: 200, icon: 'fa-dumbbell', label: '200 Classes', reward: 'Free Personal Training Session', color: '#f59e0b' },
+        { count: 300, icon: 'fa-shirt', label: '300 Classes', reward: 'Free CFPL Merch',                color: '#ef4444' }
       ];
 
       var QUOTES = [
@@ -252,13 +227,11 @@
       document.getElementById('trackerLogForm').addEventListener('submit', function(e) {
         e.preventDefault();
         var w = document.getElementById('tlWeight').value;
-        var m = document.getElementById('tlMood').value;
-        if (!w && !m) return;
-        var entry = { type: 'log', date: new Date().toISOString(), weight: w ? parseFloat(w) : null, mood: m ? parseInt(m) : null };
+        if (!w) return;
+        var entry = { type: 'log', date: new Date().toISOString(), weight: parseFloat(w) };
         entries.push(entry);
         localStorage.setItem('cfpl_tracker_entries', JSON.stringify(entries));
         document.getElementById('tlWeight').value = '';
-        document.getElementById('tlMood').value = '';
         renderAll();
       });
 
@@ -283,8 +256,6 @@
         renderMilestones();
         renderWeek();
         renderWeightChart();
-        renderRecords();
-        renderHistory();
       }
 
       /* ── Stats ── */
@@ -619,93 +590,12 @@
         }
       }
 
-      /* ── Personal Records ── */
-      function renderRecords() {
-        var container = document.getElementById('trackerRecords');
-        var checkins = entries.filter(function(e) { return e.type === 'checkin'; });
-        var logs = entries.filter(function(e) { return e.type === 'log'; });
-
-        if (checkins.length === 0 && logs.length === 0) {
-          container.innerHTML = '<p class="tracker-empty">Start logging to unlock your records!</p>';
-          return;
-        }
-
-        var records = [];
-        if (checkins.length > 0) {
-          records.push({ icon: 'fa-calendar-check', label: 'Total Classes', value: checkins.length, color: '#16a34a' });
-
-          // Best single week
-          var weekMap = {};
-          checkins.forEach(function(c) {
-            var ws = getWeekStart(new Date(c.date)).toISOString().slice(0,10);
-            weekMap[ws] = (weekMap[ws] || 0) + 1;
-          });
-          var bestWeek = Math.max.apply(null, Object.values(weekMap));
-          records.push({ icon: 'fa-bolt', label: 'Best Week', value: bestWeek + ' classes', color: '#f59e0b' });
-
-          var streaks = calcWeekStreaks();
-          records.push({ icon: 'fa-fire', label: 'Best Week Streak', value: streaks.best + (streaks.best === 1 ? ' week' : ' weeks'), color: '#ef4444' });
-        }
-
-        var weightLogs = logs.filter(function(l) { return l.weight; });
-        if (weightLogs.length >= 2) {
-          var maxLoss = 0;
-          for (var i = 1; i < weightLogs.length; i++) {
-            var change = weightLogs[0].weight - weightLogs[i].weight;
-            if (change > maxLoss) maxLoss = change;
-          }
-          if (maxLoss > 0) {
-            records.push({ icon: 'fa-arrow-trend-down', label: 'Most Weight Lost', value: maxLoss.toFixed(1) + ' lbs', color: '#3b82f6' });
-          }
-        }
-
-        var moodLogs = logs.filter(function(l) { return l.mood; });
-        if (moodLogs.length > 0) {
-          var bestMood = Math.max.apply(null, moodLogs.map(function(l) { return l.mood; }));
-          records.push({ icon: 'fa-face-smile', label: 'Best Mood', value: bestMood + ' / 10', color: '#8b5cf6' });
-        }
-
-        var html = '<div class="tracker-records-grid">';
-        records.forEach(function(r) {
-          html += '<div class="tracker-record">';
-          html += '<div class="tracker-record-icon" style="background:' + r.color + '"><i class="fas ' + r.icon + '"></i></div>';
-          html += '<div class="tracker-record-value">' + r.value + '</div>';
-          html += '<div class="tracker-record-label">' + r.label + '</div>';
-          html += '</div>';
-        });
-        html += '</div>';
-        container.innerHTML = html;
-      }
-
       window.logCheckin = function() {
         var entry = { type: 'checkin', date: new Date().toISOString() };
         entries.push(entry);
         localStorage.setItem('cfpl_tracker_entries', JSON.stringify(entries));
         renderAll();
       };
-
-      function renderHistory() {
-        var container = document.getElementById('trackerHistory');
-        var sorted = entries.slice().reverse().slice(0, 50);
-        if (sorted.length === 0) {
-          container.innerHTML = '<p class="tracker-empty">No entries yet — start logging!</p>';
-          return;
-        }
-        var html = '';
-        sorted.forEach(function(e) {
-          var d = new Date(e.date);
-          var dateStr = d.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
-          if (e.type === 'checkin') {
-            html += '<div class="tracker-history-item checkin"><span class="tracker-history-icon"><i class="fas fa-check-circle"></i></span><span>Class check-in</span><span class="tracker-history-date">' + dateStr + '</span></div>';
-          } else {
-            var parts = [];
-            if (e.weight) parts.push(e.weight + ' lbs');
-            if (e.mood) parts.push('Feeling: ' + e.mood + '/10');
-            html += '<div class="tracker-history-item log"><span class="tracker-history-icon"><i class="fas fa-pen"></i></span><span>' + parts.join(' &middot; ') + '</span><span class="tracker-history-date">' + dateStr + '</span></div>';
-          }
-        });
-        container.innerHTML = html;
-      }
 
       window.changeGoal = function() {
         var current = (profile && profile.weeklyGoal) || 4;
@@ -728,13 +618,6 @@
         profile.goalWeight = val;
         localStorage.setItem('cfpl_tracker_profile', JSON.stringify(profile));
         renderWeightChart();
-      };
-
-      window.clearHistory = function() {
-        if (!confirm('Clear all your tracker history? This cannot be undone.')) return;
-        entries = [];
-        localStorage.removeItem('cfpl_tracker_entries');
-        renderAll();
       };
 
       /* ── Confetti ── */
