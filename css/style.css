@@ -3213,6 +3213,16 @@ h3 { font-size: 1.5rem; }
   letter-spacing: 0.5px;
 }
 
+.tracker-checkin-hint {
+  font-size: 0.72rem;
+  color: #94a3b8;
+  text-align: center;
+  margin: 0 0 8px;
+}
+.tracker-checkin-hint i {
+  margin-right: 4px;
+}
+
 .tracker-btn-checkin {
   display: flex;
   align-items: center;

@@ -165,7 +165,8 @@
             </div>
             <div class="tracker-week-dots" id="trackerWeekDots"></div>
           </div>
-          <button class="tracker-btn-checkin" id="trackerCheckinBtn" onclick="logCheckin()"><i class="fas fa-plus"></i> Check In Today</button>
+          <p class="tracker-checkin-hint"><i class="fas fa-info-circle"></i> Only check in on days you completed a workout</p>
+          <button class="tracker-btn-checkin" id="trackerCheckinBtn" onclick="logCheckin()"><i class="fas fa-dumbbell"></i> Log Today's Workout</button>
         </div>
 
         <!-- Weight Journey Graph -->
@@ -221,20 +222,6 @@
           <button class="tracker-btn-delete-entry" id="deleteLastWeight" onclick="deleteLastWeight()" style="display:none;"><i class="fas fa-undo"></i> Remove Last Entry</button>
           <!-- AI Insight -->
           <div class="tracker-ai-insight" id="aiInsight" style="display:none;"></div>
-        </div>
-
-        <!-- Log weight -->
-        <div class="tracker-card">
-          <div class="tracker-card-header">
-            <h3><i class="fas fa-pen"></i> Log Weight</h3>
-          </div>
-          <form class="tracker-log-form" id="trackerLogForm">
-            <div class="refer-name-row">
-              <label>Date<input type="date" id="tlDate" required></label>
-              <label>Weight (lbs)<input type="number" id="tlWeight" step="0.1" min="50" max="500" required></label>
-            </div>
-            <button type="submit" class="tracker-btn-primary"><i class="fas fa-save"></i> Save Entry</button>
-          </form>
         </div>
 
         <!-- Member Info -->
@@ -476,27 +463,6 @@
         }
         saveData();
         showTracker(profile);
-      });
-
-      // Default log date to today
-      var dateInput = document.getElementById('tlDate');
-      dateInput.value = new Date().toISOString().slice(0, 10);
-      dateInput.max = new Date().toISOString().slice(0, 10);
-
-      document.getElementById('trackerLogForm').addEventListener('submit', function(e) {
-        e.preventDefault();
-        var w = document.getElementById('tlWeight').value;
-        var d = document.getElementById('tlDate').value;
-        if (!w || !d) return;
-        // Build ISO date at noon to avoid timezone issues
-        var entry = { type: 'log', date: d + 'T12:00:00', weight: parseFloat(w) };
-        entries.push(entry);
-        // Sort entries by date so chart always plots chronologically
-        entries.sort(function(a, b) { return new Date(a.date) - new Date(b.date); });
-        saveData();
-        document.getElementById('tlWeight').value = '';
-        document.getElementById('tlDate').value = new Date().toISOString().slice(0, 10);
-        renderAll();
       });
 
       function showTracker(p) {
