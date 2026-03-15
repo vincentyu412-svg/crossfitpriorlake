@@ -63,6 +63,7 @@
             <label>Current Weight (lbs)<input type="number" id="tsWeight" step="0.1" min="50" max="500"></label>
             <label>Goal Weight (lbs)<input type="number" id="tsGoalWeight" step="0.1" min="50" max="500"></label>
           </div>
+          <label>Target Date (optional)<input type="date" id="tsGoalDate"></label>
           <button type="submit" class="tracker-btn-primary"><i class="fas fa-check"></i> Start Tracking</button>
         </form>
       </div>
@@ -101,7 +102,22 @@
         <div class="tracker-card">
           <div class="tracker-card-header">
             <h3><i class="fas fa-calendar-check"></i> This Week</h3>
-            <button class="tracker-btn-small" onclick="changeGoal()"><i class="fas fa-sliders"></i> Goal</button>
+            <button class="tracker-btn-goal" id="goalToggleBtn" onclick="toggleGoalEditor()"><i class="fas fa-sliders"></i> Edit Goal</button>
+          </div>
+          <!-- Inline goal editor -->
+          <div class="tracker-inline-editor" id="goalEditor" style="display:none;">
+            <label class="tracker-inline-label">Weekly class goal</label>
+            <div class="tracker-inline-row">
+              <select id="goalEditorSelect" class="tracker-inline-select">
+                <option value="3">3 classes</option>
+                <option value="4">4 classes</option>
+                <option value="5">5 classes</option>
+                <option value="6">6 classes</option>
+                <option value="7">7 classes</option>
+              </select>
+              <button class="tracker-inline-save" onclick="saveGoal()"><i class="fas fa-check"></i></button>
+              <button class="tracker-inline-cancel" onclick="toggleGoalEditor()"><i class="fas fa-times"></i></button>
+            </div>
           </div>
           <div class="tracker-week-visual">
             <div class="tracker-ring-wrap">
@@ -123,7 +139,24 @@
         <div class="tracker-card" id="trackerWeightCard">
           <div class="tracker-card-header">
             <h3><i class="fas fa-chart-line"></i> Weight Journey</h3>
-            <button class="tracker-btn-small" onclick="editGoalWeight()"><i class="fas fa-bullseye"></i> Goal</button>
+            <button class="tracker-btn-goal" id="goalWeightToggleBtn" onclick="toggleGoalWeightEditor()"><i class="fas fa-bullseye"></i> Set Goal</button>
+          </div>
+          <!-- Inline goal weight editor -->
+          <div class="tracker-inline-editor" id="goalWeightEditor" style="display:none;">
+            <div class="tracker-inline-row-stack">
+              <div class="tracker-inline-field">
+                <label class="tracker-inline-label">Goal weight (lbs)</label>
+                <input type="number" id="goalWeightInput" class="tracker-inline-input" step="0.1" min="50" max="500" placeholder="e.g. 175">
+              </div>
+              <div class="tracker-inline-field">
+                <label class="tracker-inline-label">Target date</label>
+                <input type="date" id="goalDateInput" class="tracker-inline-input">
+              </div>
+            </div>
+            <div class="tracker-inline-row" style="margin-top:8px;">
+              <button class="tracker-inline-save" onclick="saveGoalWeight()" style="flex:1;border-radius:8px;width:auto;height:auto;padding:8px;"><i class="fas fa-check"></i> Save Goal</button>
+              <button class="tracker-inline-cancel" onclick="toggleGoalWeightEditor()" style="flex:0;width:34px;height:34px;"><i class="fas fa-times"></i></button>
+            </div>
           </div>
           <div class="tracker-weight-summary" id="weightSummary" style="display:none;">
             <div class="tracker-weight-stat">
@@ -152,6 +185,9 @@
             <i class="fas fa-chart-area"></i>
             <p>Log your weight to see your progress graph</p>
           </div>
+          <button class="tracker-btn-delete-entry" id="deleteLastWeight" onclick="deleteLastWeight()" style="display:none;"><i class="fas fa-undo"></i> Remove Last Entry</button>
+          <!-- AI Insight -->
+          <div class="tracker-ai-insight" id="aiInsight" style="display:none;"></div>
         </div>
 
         <!-- Log weight -->
@@ -160,9 +196,73 @@
             <h3><i class="fas fa-pen"></i> Log Weight</h3>
           </div>
           <form class="tracker-log-form" id="trackerLogForm">
-            <label>Weight (lbs)<input type="number" id="tlWeight" step="0.1" min="50" max="500" required></label>
+            <div class="refer-name-row">
+              <label>Date<input type="date" id="tlDate" required></label>
+              <label>Weight (lbs)<input type="number" id="tlWeight" step="0.1" min="50" max="500" required></label>
+            </div>
             <button type="submit" class="tracker-btn-primary"><i class="fas fa-save"></i> Save Entry</button>
           </form>
+        </div>
+
+        <!-- Activity Heatmap -->
+        <div class="tracker-card">
+          <div class="tracker-card-header">
+            <h3><i class="fas fa-fire-flame-curved"></i> Activity Heatmap</h3>
+            <div class="tracker-heatmap-nav">
+              <button class="tracker-btn-small" onclick="heatmapPrev()"><i class="fas fa-chevron-left"></i></button>
+              <span class="tracker-heatmap-month" id="heatmapMonth"></span>
+              <button class="tracker-btn-small" onclick="heatmapNext()"><i class="fas fa-chevron-right"></i></button>
+            </div>
+          </div>
+          <div class="tracker-heatmap-grid" id="trackerHeatmap"></div>
+          <div class="tracker-heatmap-legend">
+            <span class="tracker-heatmap-legend-label">Less</span>
+            <span class="tracker-heatmap-legend-box l0"></span>
+            <span class="tracker-heatmap-legend-box l1"></span>
+            <span class="tracker-heatmap-legend-box l2"></span>
+            <span class="tracker-heatmap-legend-label">More</span>
+          </div>
+        </div>
+
+        <!-- Weekly Trend -->
+        <div class="tracker-card">
+          <div class="tracker-card-header">
+            <h3><i class="fas fa-chart-bar"></i> Weekly Trend</h3>
+          </div>
+          <div class="tracker-trend-wrap">
+            <canvas id="trendChart" height="180"></canvas>
+          </div>
+          <div class="tracker-trend-empty" id="trendEmpty" style="display:none;">
+            <i class="fas fa-chart-column"></i>
+            <p>Check in to start seeing your weekly trend</p>
+          </div>
+        </div>
+
+        <!-- Member Info -->
+        <div class="tracker-card tracker-member-card">
+          <div class="tracker-card-header">
+            <h3><i class="fas fa-user-circle"></i> My Profile</h3>
+            <button class="tracker-btn-small" id="editProfileToggle" onclick="toggleEditProfile()"><i class="fas fa-pencil"></i> Edit</button>
+          </div>
+          <div class="tracker-member-info" id="memberInfo">
+            <div class="tracker-member-since">
+              <i class="fas fa-clock"></i>
+              <span id="memberSince"></span>
+            </div>
+            <div class="tracker-member-details" id="memberDetails"></div>
+          </div>
+          <!-- Inline edit profile -->
+          <div class="tracker-edit-profile" id="editProfileForm" style="display:none;">
+            <div class="refer-name-row">
+              <label>First Name<input type="text" id="epFirstName"></label>
+              <label>Last Name<input type="text" id="epLastName"></label>
+            </div>
+            <label>Phone<input type="tel" id="epPhone"></label>
+            <div class="tracker-edit-actions">
+              <button class="tracker-btn-primary" onclick="saveProfile()"><i class="fas fa-save"></i> Save</button>
+              <button class="tracker-btn-secondary" onclick="toggleEditProfile()">Cancel</button>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -175,14 +275,21 @@
   <!-- Confetti canvas -->
   <canvas id="confettiCanvas" style="position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:9999;"></canvas>
 
-  <script>
-    if (sessionStorage.getItem('cfpl_auth') !== '1') {
-      window.location.href = 'members.html';
-    }
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+  <script src="js/firebase-config.js"></script>
 
-    (function() {
-      var profile = JSON.parse(localStorage.getItem('cfpl_tracker_profile') || 'null');
-      var entries = JSON.parse(localStorage.getItem('cfpl_tracker_entries') || '[]');
+  <script>
+    requireAuth(function(user) {
+      var docRef = db.collection('users').doc(user.uid);
+      var profile = null;
+      var entries = [];
+
+      function saveData() {
+        docRef.set({ profile: profile, entries: entries });
+      }
 
       var MILESTONES = [
         { count: 50,  icon: 'fa-shirt',    label: '50 Classes',  reward: 'Free CFPL Merch',                color: '#3b82f6' },
@@ -203,7 +310,15 @@
         "Results happen over time, not overnight. Stay patient and stay consistent."
       ];
 
-      if (profile) showTracker(profile);
+      // Load data from Firestore, then initialize UI
+      docRef.get().then(function(doc) {
+        if (doc.exists) {
+          var data = doc.data();
+          profile = data.profile || null;
+          entries = data.entries || [];
+        }
+        if (profile) showTracker(profile);
+      });
 
       document.getElementById('trackerSetupForm').addEventListener('submit', function(e) {
         e.preventDefault();
@@ -213,25 +328,35 @@
           lastName: document.getElementById('tsLastName').value.trim(),
           phone: document.getElementById('tsPhone').value.trim(),
           weeklyGoal: parseInt(document.getElementById('tsGoal').value) || 4,
-          goalWeight: parseFloat(document.getElementById('tsGoalWeight').value) || null
+          goalWeight: parseFloat(document.getElementById('tsGoalWeight').value) || null,
+          goalDate: document.getElementById('tsGoalDate').value || null
         };
-        localStorage.setItem('cfpl_tracker_profile', JSON.stringify(profile));
         // Log starting weight if provided
         if (startWeight) {
           entries.push({ type: 'log', date: new Date().toISOString(), weight: startWeight, mood: null });
-          localStorage.setItem('cfpl_tracker_entries', JSON.stringify(entries));
         }
+        saveData();
         showTracker(profile);
       });
+
+      // Default log date to today
+      var dateInput = document.getElementById('tlDate');
+      dateInput.value = new Date().toISOString().slice(0, 10);
+      dateInput.max = new Date().toISOString().slice(0, 10);
 
       document.getElementById('trackerLogForm').addEventListener('submit', function(e) {
         e.preventDefault();
         var w = document.getElementById('tlWeight').value;
-        if (!w) return;
-        var entry = { type: 'log', date: new Date().toISOString(), weight: parseFloat(w) };
+        var d = document.getElementById('tlDate').value;
+        if (!w || !d) return;
+        // Build ISO date at noon to avoid timezone issues
+        var entry = { type: 'log', date: d + 'T12:00:00', weight: parseFloat(w) };
         entries.push(entry);
-        localStorage.setItem('cfpl_tracker_entries', JSON.stringify(entries));
+        // Sort entries by date so chart always plots chronologically
+        entries.sort(function(a, b) { return new Date(a.date) - new Date(b.date); });
+        saveData();
         document.getElementById('tlWeight').value = '';
+        document.getElementById('tlDate').value = new Date().toISOString().slice(0, 10);
         renderAll();
       });
 
@@ -248,7 +373,7 @@
         document.getElementById('trackerQuote').textContent = '"' + QUOTES[Math.floor(Math.random() * QUOTES.length)] + '"';
 
         document.getElementById('trackerGoalDisplay').textContent = p.weeklyGoal || 4;
-        renderAll();
+        setTimeout(renderAll, 0);
       }
 
       function renderAll() {
@@ -256,6 +381,10 @@
         renderMilestones();
         renderWeek();
         renderWeightChart();
+        renderInsight();
+        renderHeatmap();
+        renderTrend();
+        renderMemberInfo();
       }
 
       /* ── Stats ── */
@@ -431,14 +560,18 @@
         var chartEmpty = document.getElementById('chartEmpty');
         var canvas = document.getElementById('weightChart');
 
+        var deleteBtn = document.getElementById('deleteLastWeight');
+
         if (logs.length === 0) {
           summary.style.display = 'none';
           chartEmpty.style.display = '';
           canvas.style.display = 'none';
+          deleteBtn.style.display = 'none';
           return;
         }
 
         summary.style.display = '';
+        deleteBtn.style.display = '';
         canvas.style.display = '';
         chartEmpty.style.display = 'none';
 
@@ -590,37 +723,400 @@
         }
       }
 
+      /* ── AI Weight Insight ── */
+      function renderInsight() {
+        var panel = document.getElementById('aiInsight');
+        var logs = entries.filter(function(e) { return e.type === 'log' && e.weight; });
+        var goalWeight = profile && profile.goalWeight;
+        var goalDate = profile && profile.goalDate;
+
+        if (logs.length < 2 || !goalWeight) {
+          panel.style.display = 'none';
+          return;
+        }
+
+        panel.style.display = '';
+        var first = logs[0];
+        var last = logs[logs.length - 1];
+        var startW = first.weight;
+        var currentW = last.weight;
+        var totalChange = currentW - startW;
+        var daysBetween = Math.max(1, Math.round((new Date(last.date) - new Date(first.date)) / 86400000));
+        var weeklyRate = (totalChange / daysBetween) * 7;
+        var toGo = currentW - goalWeight;
+        var losing = goalWeight < startW;
+        var direction = losing ? 'lose' : 'gain';
+
+        var html = '<div class="tracker-ai-header"><i class="fas fa-robot"></i> AI Coach Insight</div>';
+
+        // If they have a target date
+        if (goalDate) {
+          var targetDate = new Date(goalDate + 'T00:00:00');
+          var now = new Date(); now.setHours(0,0,0,0);
+          var daysLeft = Math.round((targetDate - now) / 86400000);
+          var weeksLeft = daysLeft / 7;
+          var targetDateStr = targetDate.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+
+          if (daysLeft <= 0) {
+            // Past the deadline
+            if ((losing && currentW <= goalWeight) || (!losing && currentW >= goalWeight)) {
+              html += '<div class="tracker-ai-status on-track"><i class="fas fa-trophy"></i> You hit your goal! Incredible work!</div>';
+              html += '<div class="tracker-ai-body">You reached <strong>' + goalWeight + ' lbs</strong> by your target date. Time to set a new goal and keep the momentum going!</div>';
+            } else {
+              html += '<div class="tracker-ai-status behind"><i class="fas fa-clock"></i> Your target date has passed</div>';
+              html += '<div class="tracker-ai-body">You\'re at <strong>' + currentW + ' lbs</strong> — still ' + Math.abs(toGo).toFixed(1) + ' lbs from your ' + goalWeight + ' lb goal. Don\'t stress — set a new target date and keep going. Progress isn\'t always linear!</div>';
+            }
+          } else if ((losing && currentW <= goalWeight) || (!losing && currentW >= goalWeight)) {
+            // Already hit the goal
+            html += '<div class="tracker-ai-status on-track"><i class="fas fa-star"></i> Goal reached!</div>';
+            html += '<div class="tracker-ai-body">You\'re already at <strong>' + currentW + ' lbs</strong> — you hit your ' + goalWeight + ' lb goal with <strong>' + daysLeft + ' days to spare</strong>! Amazing consistency.</div>';
+          } else {
+            // Still working toward it
+            var neededRate = (toGo / weeksLeft);
+            var absNeeded = Math.abs(neededRate).toFixed(1);
+            var absWeekly = Math.abs(weeklyRate).toFixed(1);
+            var onTrack = losing ? (weeklyRate <= neededRate * 1.1) : (weeklyRate >= neededRate * 0.9);
+
+            if (onTrack) {
+              html += '<div class="tracker-ai-status on-track"><i class="fas fa-check-circle"></i> You\'re on track!</div>';
+              html += '<div class="tracker-ai-body">At your current pace of <strong>' + absWeekly + ' lbs/week</strong>, you\'re projected to reach <strong>' + goalWeight + ' lbs</strong> by <strong>' + targetDateStr + '</strong>. Keep showing up!</div>';
+            } else {
+              html += '<div class="tracker-ai-status behind"><i class="fas fa-exclamation-triangle"></i> Slightly behind pace</div>';
+              html += '<div class="tracker-ai-body">You need to ' + direction + ' about <strong>' + absNeeded + ' lbs/week</strong> to reach ' + goalWeight + ' lbs by ' + targetDateStr + '. You\'re currently at <strong>' + absWeekly + ' lbs/week</strong>.</div>';
+
+              // Actionable tips
+              html += '<div class="tracker-ai-tips">';
+              html += '<div class="tracker-ai-tip-header"><i class="fas fa-lightbulb"></i> Tips to get back on track:</div>';
+              if (losing) {
+                html += '<div class="tracker-ai-tip"><i class="fas fa-utensils"></i> Focus on whole foods — protein, veggies, healthy fats at every meal</div>';
+                html += '<div class="tracker-ai-tip"><i class="fas fa-dumbbell"></i> Stay consistent with ' + ((profile && profile.weeklyGoal) || 4) + '+ classes per week</div>';
+                html += '<div class="tracker-ai-tip"><i class="fas fa-moon"></i> Aim for 7-9 hours of sleep — recovery drives results</div>';
+                html += '<div class="tracker-ai-tip"><i class="fas fa-droplet"></i> Drink at least half your bodyweight (oz) in water daily</div>';
+              } else {
+                html += '<div class="tracker-ai-tip"><i class="fas fa-utensils"></i> Increase caloric intake with protein-rich meals and healthy carbs</div>';
+                html += '<div class="tracker-ai-tip"><i class="fas fa-dumbbell"></i> Prioritize strength training to build lean mass</div>';
+                html += '<div class="tracker-ai-tip"><i class="fas fa-clock"></i> Eat consistent meals every 3-4 hours</div>';
+              }
+              html += '</div>';
+            }
+          }
+        } else {
+          // No target date — just show current trend
+          var absWeekly = Math.abs(weeklyRate).toFixed(1);
+          var dirWord = weeklyRate < 0 ? 'losing' : weeklyRate > 0 ? 'gaining' : 'maintaining';
+          html += '<div class="tracker-ai-status neutral"><i class="fas fa-chart-line"></i> Current Trend</div>';
+          html += '<div class="tracker-ai-body">You\'re ' + dirWord + ' about <strong>' + absWeekly + ' lbs/week</strong>. ';
+          if (Math.abs(toGo) > 0.5) {
+            var weeksNeeded = Math.abs(toGo) / Math.max(Math.abs(weeklyRate), 0.1);
+            html += 'At this rate, you\'ll reach your goal in roughly <strong>' + Math.round(weeksNeeded) + ' weeks</strong>. Set a target date with the <em>Set Goal</em> button for personalized coaching.</div>';
+          } else {
+            html += 'You\'re very close to your goal!</div>';
+          }
+        }
+
+        panel.innerHTML = html;
+      }
+
       window.logCheckin = function() {
         var entry = { type: 'checkin', date: new Date().toISOString() };
         entries.push(entry);
-        localStorage.setItem('cfpl_tracker_entries', JSON.stringify(entries));
+        saveData();
         renderAll();
       };
 
       window.changeGoal = function() {
-        var current = (profile && profile.weeklyGoal) || 4;
-        var val = prompt('Set your weekly class goal (3–7):', current);
-        if (!val) return;
-        val = parseInt(val);
-        if (val < 3 || val > 7 || isNaN(val)) { alert('Please enter a number between 3 and 7.'); return; }
+        // Deprecated — use toggleGoalEditor
+        toggleGoalEditor();
+      };
+
+      window.toggleGoalEditor = function() {
+        var ed = document.getElementById('goalEditor');
+        var showing = ed.style.display !== 'none';
+        ed.style.display = showing ? 'none' : '';
+        if (!showing) {
+          document.getElementById('goalEditorSelect').value = (profile && profile.weeklyGoal) || 4;
+        }
+      };
+
+      window.saveGoal = function() {
+        var val = parseInt(document.getElementById('goalEditorSelect').value);
+        if (val < 3 || val > 7 || isNaN(val)) return;
         profile.weeklyGoal = val;
-        localStorage.setItem('cfpl_tracker_profile', JSON.stringify(profile));
+        saveData();
         document.getElementById('trackerGoalDisplay').textContent = val;
+        document.getElementById('goalEditor').style.display = 'none';
+        renderAll();
+      };
+
+      window.toggleGoalWeightEditor = function() {
+        var ed = document.getElementById('goalWeightEditor');
+        var showing = ed.style.display !== 'none';
+        ed.style.display = showing ? 'none' : '';
+        if (!showing) {
+          document.getElementById('goalWeightInput').value = (profile && profile.goalWeight) || '';
+          document.getElementById('goalDateInput').value = (profile && profile.goalDate) || '';
+          document.getElementById('goalWeightInput').focus();
+        }
+      };
+
+      window.saveGoalWeight = function() {
+        var val = parseFloat(document.getElementById('goalWeightInput').value);
+        if (isNaN(val) || val < 50 || val > 500) return;
+        profile.goalWeight = val;
+        var dateVal = document.getElementById('goalDateInput').value;
+        profile.goalDate = dateVal || null;
+        saveData();
+        document.getElementById('goalWeightEditor').style.display = 'none';
         renderAll();
       };
 
       window.editGoalWeight = function() {
-        var current = (profile && profile.goalWeight) || '';
-        var val = prompt('Set your goal weight (lbs):', current);
-        if (val === null) return;
-        val = parseFloat(val);
-        if (isNaN(val) || val < 50 || val > 500) { alert('Please enter a weight between 50 and 500 lbs.'); return; }
-        profile.goalWeight = val;
-        localStorage.setItem('cfpl_tracker_profile', JSON.stringify(profile));
-        renderWeightChart();
+        toggleGoalWeightEditor();
       };
 
-      /* ── Confetti ── */
+      /* ── Delete last weight entry ── */
+      window.deleteLastWeight = function() {
+        for (var i = entries.length - 1; i >= 0; i--) {
+          if (entries[i].type === 'log') {
+            entries.splice(i, 1);
+            saveData();
+            renderAll();
+            return;
+          }
+        }
+      };
+
+      /* ── Activity Heatmap ── */
+      var heatmapDate = new Date();
+      heatmapDate.setDate(1);
+
+      window.heatmapPrev = function() {
+        heatmapDate.setMonth(heatmapDate.getMonth() - 1);
+        renderHeatmap();
+      };
+      window.heatmapNext = function() {
+        var now = new Date();
+        now.setDate(1); now.setHours(0,0,0,0);
+        var next = new Date(heatmapDate);
+        next.setMonth(next.getMonth() + 1);
+        if (next <= now || next.getMonth() === now.getMonth() && next.getFullYear() === now.getFullYear()) {
+          heatmapDate.setMonth(heatmapDate.getMonth() + 1);
+        }
+        renderHeatmap();
+      };
+
+      function renderHeatmap() {
+        var monthNames = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+        document.getElementById('heatmapMonth').textContent = monthNames[heatmapDate.getMonth()] + ' ' + heatmapDate.getFullYear();
+
+        var year = heatmapDate.getFullYear();
+        var month = heatmapDate.getMonth();
+        var daysInMonth = new Date(year, month + 1, 0).getDate();
+        var firstDayOfWeek = new Date(year, month, 1).getDay();
+        // Convert Sunday = 0 to Monday-start: Mon=0 ... Sun=6
+        var startOffset = firstDayOfWeek === 0 ? 6 : firstDayOfWeek - 1;
+
+        // Count check-ins per day this month
+        var dayCounts = {};
+        entries.forEach(function(e) {
+          if (e.type !== 'checkin') return;
+          var d = new Date(e.date);
+          if (d.getFullYear() === year && d.getMonth() === month) {
+            var day = d.getDate();
+            dayCounts[day] = (dayCounts[day] || 0) + 1;
+          }
+        });
+
+        var dayLabels = ['M','T','W','T','F','S','S'];
+        var html = '';
+        // Day labels row
+        for (var d = 0; d < 7; d++) {
+          html += '<div class="tracker-heatmap-label">' + dayLabels[d] + '</div>';
+        }
+        // Empty cells for offset
+        for (var o = 0; o < startOffset; o++) {
+          html += '<div class="tracker-heatmap-cell empty"></div>';
+        }
+        var today = new Date(); today.setHours(0,0,0,0);
+        for (var day = 1; day <= daysInMonth; day++) {
+          var count = dayCounts[day] || 0;
+          var level = count === 0 ? 'l0' : count === 1 ? 'l1' : 'l2';
+          var isToday = (year === today.getFullYear() && month === today.getMonth() && day === today.getDate());
+          html += '<div class="tracker-heatmap-cell ' + level + (isToday ? ' today' : '') + '" title="' + monthNames[month].slice(0,3) + ' ' + day + ': ' + count + ' check-in' + (count !== 1 ? 's' : '') + '">';
+          html += '<span>' + day + '</span></div>';
+        }
+        document.getElementById('trackerHeatmap').innerHTML = html;
+      }
+
+      /* ── Weekly Trend Bar Chart ── */
+      function renderTrend() {
+        var checkins = entries.filter(function(e) { return e.type === 'checkin'; });
+        var trendEmpty = document.getElementById('trendEmpty');
+        var canvas = document.getElementById('trendChart');
+
+        if (checkins.length === 0) {
+          trendEmpty.style.display = '';
+          canvas.style.display = 'none';
+          return;
+        }
+        trendEmpty.style.display = 'none';
+        canvas.style.display = '';
+
+        // Group check-ins by week for the last 8 weeks
+        var now = new Date();
+        var weeks = [];
+        for (var w = 7; w >= 0; w--) {
+          var ws = getWeekStart(new Date(now.getTime() - w * 7 * 86400000));
+          var we = new Date(ws); we.setDate(we.getDate() + 7);
+          var count = 0;
+          checkins.forEach(function(c) {
+            var cd = new Date(c.date);
+            if (cd >= ws && cd < we) count++;
+          });
+          weeks.push({
+            label: ws.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }),
+            count: count,
+            isCurrent: w === 0
+          });
+        }
+
+        var ctx = canvas.getContext('2d');
+        var dpr = window.devicePixelRatio || 1;
+        var rect = canvas.parentElement.getBoundingClientRect();
+        canvas.width = rect.width * dpr;
+        canvas.height = 180 * dpr;
+        canvas.style.width = rect.width + 'px';
+        canvas.style.height = '180px';
+        ctx.scale(dpr, dpr);
+
+        var W = rect.width;
+        var H = 180;
+        var pad = { top: 16, right: 12, bottom: 36, left: 32 };
+        var cW = W - pad.left - pad.right;
+        var cH = H - pad.top - pad.bottom;
+        var barW = Math.min(cW / weeks.length * 0.6, 32);
+        var gap = cW / weeks.length;
+        var maxCount = Math.max.apply(null, weeks.map(function(w) { return w.count; }));
+        maxCount = Math.max(maxCount, (profile && profile.weeklyGoal) || 4);
+
+        ctx.clearRect(0, 0, W, H);
+
+        // Grid lines
+        ctx.strokeStyle = '#f0f0f0';
+        ctx.lineWidth = 1;
+        for (var g = 0; g <= 4; g++) {
+          var gy = pad.top + (cH / 4) * g;
+          ctx.beginPath(); ctx.moveTo(pad.left, gy); ctx.lineTo(W - pad.right, gy); ctx.stroke();
+        }
+
+        // Goal line
+        var goal = (profile && profile.weeklyGoal) || 4;
+        var goalY = pad.top + cH - (goal / maxCount) * cH;
+        ctx.setLineDash([5, 3]);
+        ctx.strokeStyle = '#f59e0b';
+        ctx.lineWidth = 1.5;
+        ctx.beginPath(); ctx.moveTo(pad.left, goalY); ctx.lineTo(W - pad.right, goalY); ctx.stroke();
+        ctx.setLineDash([]);
+        ctx.fillStyle = '#f59e0b';
+        ctx.font = 'bold 9px League Spartan, sans-serif';
+        ctx.textAlign = 'left';
+        ctx.fillText('GOAL', W - pad.right - 28, goalY - 4);
+
+        // Bars
+        weeks.forEach(function(w, i) {
+          var x = pad.left + i * gap + (gap - barW) / 2;
+          var barH = maxCount > 0 ? (w.count / maxCount) * cH : 0;
+          var y = pad.top + cH - barH;
+          var radius = Math.max(0, Math.min(barW / 2, 4));
+
+          // Bar
+          var metGoal = w.count >= goal;
+          ctx.fillStyle = metGoal ? '#16a34a' : (w.isCurrent ? '#3a7bd5' : '#d1d5db');
+          ctx.beginPath();
+          ctx.moveTo(x, y + radius);
+          ctx.arcTo(x, y, x + barW, y, radius);
+          ctx.arcTo(x + barW, y, x + barW, y + barH, radius);
+          ctx.lineTo(x + barW, pad.top + cH);
+          ctx.lineTo(x, pad.top + cH);
+          ctx.closePath();
+          ctx.fill();
+
+          // Count on top
+          if (w.count > 0) {
+            ctx.fillStyle = '#666';
+            ctx.font = 'bold 10px League Spartan, sans-serif';
+            ctx.textAlign = 'center';
+            ctx.fillText(w.count, x + barW / 2, y - 4);
+          }
+
+          // X label
+          ctx.fillStyle = w.isCurrent ? '#333' : '#bbb';
+          ctx.font = (w.isCurrent ? 'bold ' : '') + '8px Open Sans, sans-serif';
+          ctx.textAlign = 'center';
+          ctx.fillText(w.label, x + barW / 2, H - 8);
+        });
+
+        // Y axis labels
+        ctx.fillStyle = '#bbb';
+        ctx.font = '10px League Spartan, sans-serif';
+        ctx.textAlign = 'right';
+        for (var g = 0; g <= 4; g++) {
+          var val = Math.round(maxCount - (maxCount / 4) * g);
+          var gy = pad.top + (cH / 4) * g;
+          ctx.fillText(val, pad.left - 6, gy + 4);
+        }
+      }
+
+      /* ── Member Info ── */
+      function renderMemberInfo() {
+        if (!profile) return;
+
+        // Member since — use first entry date or profile creation
+        var firstEntryDate = entries.length > 0 ? new Date(entries[0].date) : new Date();
+        var sinceText = firstEntryDate.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+        var daysSince = Math.floor((new Date() - firstEntryDate) / 86400000);
+        var sinceStr = 'Tracking since ' + sinceText;
+        if (daysSince > 0) sinceStr += ' (' + daysSince + ' day' + (daysSince !== 1 ? 's' : '') + ')';
+        document.getElementById('memberSince').textContent = sinceStr;
+
+        // Details
+        var html = '<div class="tracker-member-detail"><strong>Name:</strong> ' + (profile.firstName || '') + ' ' + (profile.lastName || '') + '</div>';
+        html += '<div class="tracker-member-detail"><strong>Phone:</strong> ' + (profile.phone || '—') + '</div>';
+        html += '<div class="tracker-member-detail"><strong>Weekly Goal:</strong> ' + ((profile.weeklyGoal || 4) + ' classes') + '</div>';
+        if (profile.goalWeight) html += '<div class="tracker-member-detail"><strong>Goal Weight:</strong> ' + profile.goalWeight + ' lbs</div>';
+        if (profile.goalDate) html += '<div class="tracker-member-detail"><strong>Target Date:</strong> ' + new Date(profile.goalDate + 'T00:00:00').toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }) + '</div>';
+        document.getElementById('memberDetails').innerHTML = html;
+      }
+
+      window.toggleEditProfile = function() {
+        var form = document.getElementById('editProfileForm');
+        var showing = form.style.display !== 'none';
+        form.style.display = showing ? 'none' : '';
+        if (!showing) {
+          document.getElementById('epFirstName').value = profile.firstName || '';
+          document.getElementById('epLastName').value = profile.lastName || '';
+          document.getElementById('epPhone').value = profile.phone || '';
+        }
+      };
+
+      window.saveProfile = function() {
+        var fn = document.getElementById('epFirstName').value.trim();
+        var ln = document.getElementById('epLastName').value.trim();
+        var ph = document.getElementById('epPhone').value.trim();
+        if (!fn || !ln) return;
+        profile.firstName = fn;
+        profile.lastName = ln;
+        profile.phone = ph;
+        saveData();
+        document.getElementById('editProfileForm').style.display = 'none';
+
+        var h = new Date().getHours();
+        var greeting = h < 12 ? 'Good morning' : h < 17 ? 'Good afternoon' : 'Good evening';
+        document.getElementById('trackerWelcome').textContent = greeting + ', ' + profile.firstName + '!';
+        renderMemberInfo();
+      };
+
+
       function fireConfetti() {
         var canvas = document.getElementById('confettiCanvas');
         var ctx = canvas.getContext('2d');
@@ -674,9 +1170,9 @@
       var resizeTimer;
       window.addEventListener('resize', function() {
         clearTimeout(resizeTimer);
-        resizeTimer = setTimeout(function() { renderWeightChart(); }, 150);
+        resizeTimer = setTimeout(function() { renderWeightChart(); renderTrend(); }, 150);
       });
-    })();
+    });
   </script>
 </body>
 </html>
