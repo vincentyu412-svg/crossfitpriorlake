@@ -895,30 +895,77 @@
             html += '<div class="tracker-ai-body">You\'re already at <strong>' + currentW + ' lbs</strong> — you hit your ' + goalWeight + ' lb goal with <strong>' + daysLeft + ' days to spare</strong>! Amazing consistency.</div>';
           } else {
             // Still working toward it
-            var neededRate = (toGo / weeksLeft);
-            var absNeeded = Math.abs(neededRate).toFixed(1);
-            var absWeekly = Math.abs(weeklyRate).toFixed(1);
-            var onTrack = losing ? (weeklyRate <= neededRate * 1.1) : (weeklyRate >= neededRate * 0.9);
+            var absToGo = Math.abs(toGo);
+            var absNeededPerWeek = absToGo / Math.max(weeksLeft, 0.1);
+            var absWeeklyRate = Math.abs(weeklyRate);
+            var movingRight = losing ? (weeklyRate < -0.01) : (weeklyRate > 0.01);
+            var onTrack = movingRight && (absWeeklyRate >= absNeededPerWeek * 0.85);
+
+            // Project finish date at current pace
+            var projectedWeeks = absWeeklyRate > 0.05 ? (absToGo / absWeeklyRate) : null;
+            var projectedDate = projectedWeeks ? new Date(Date.now() + projectedWeeks * 7 * 86400000) : null;
+            var projectedStr = projectedDate ? projectedDate.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }) : null;
+
+            // How far behind (percentage)
+            var paceGap = absNeededPerWeek > 0 ? ((absNeededPerWeek - absWeeklyRate) / absNeededPerWeek * 100) : 0;
 
             if (onTrack) {
               html += '<div class="tracker-ai-status on-track"><i class="fas fa-check-circle"></i> You\'re on track!</div>';
-              html += '<div class="tracker-ai-body">At your current pace of <strong>' + absWeekly + ' lbs/week</strong>, you\'re projected to reach <strong>' + goalWeight + ' lbs</strong> by <strong>' + targetDateStr + '</strong>. Keep showing up!</div>';
-            } else {
-              html += '<div class="tracker-ai-status behind"><i class="fas fa-exclamation-triangle"></i> Slightly behind pace</div>';
-              html += '<div class="tracker-ai-body">You need to ' + direction + ' about <strong>' + absNeeded + ' lbs/week</strong> to reach ' + goalWeight + ' lbs by ' + targetDateStr + '. You\'re currently at <strong>' + absWeekly + ' lbs/week</strong>.</div>';
-
-              // Actionable tips
+              html += '<div class="tracker-ai-body">You\'re ' + (losing ? 'losing' : 'gaining') + ' <strong>' + absWeeklyRate.toFixed(1) + ' lbs/week</strong> — you need <strong>' + absNeededPerWeek.toFixed(1) + ' lbs/week</strong> to hit ' + goalWeight + ' lbs by ' + targetDateStr + '.';
+              if (projectedStr) html += ' At this pace, you\'re projected to reach your goal by <strong>' + projectedStr + '</strong>.';
+              html += '</div>';
               html += '<div class="tracker-ai-tips">';
-              html += '<div class="tracker-ai-tip-header"><i class="fas fa-lightbulb"></i> Tips to get back on track:</div>';
+              html += '<div class="tracker-ai-tip-header"><i class="fas fa-lightbulb"></i> Keep it going:</div>';
               if (losing) {
-                html += '<div class="tracker-ai-tip"><i class="fas fa-utensils"></i> Focus on whole foods — protein, veggies, healthy fats at every meal</div>';
-                html += '<div class="tracker-ai-tip"><i class="fas fa-dumbbell"></i> Stay consistent with ' + ((profile && profile.weeklyGoal) || 4) + '+ classes per week</div>';
-                html += '<div class="tracker-ai-tip"><i class="fas fa-moon"></i> Aim for 7-9 hours of sleep — recovery drives results</div>';
-                html += '<div class="tracker-ai-tip"><i class="fas fa-droplet"></i> Drink at least half your bodyweight (oz) in water daily</div>';
+                html += '<div class="tracker-ai-tip"><i class="fas fa-dumbbell"></i> Keep hitting your ' + ((profile && profile.weeklyGoal) || 4) + ' classes/week — consistency is everything</div>';
+                html += '<div class="tracker-ai-tip"><i class="fas fa-utensils"></i> Stay focused on protein-rich meals with veggies at every plate</div>';
               } else {
-                html += '<div class="tracker-ai-tip"><i class="fas fa-utensils"></i> Increase caloric intake with protein-rich meals and healthy carbs</div>';
-                html += '<div class="tracker-ai-tip"><i class="fas fa-dumbbell"></i> Prioritize strength training to build lean mass</div>';
-                html += '<div class="tracker-ai-tip"><i class="fas fa-clock"></i> Eat consistent meals every 3-4 hours</div>';
+                html += '<div class="tracker-ai-tip"><i class="fas fa-dumbbell"></i> Keep showing up to your ' + ((profile && profile.weeklyGoal) || 4) + ' classes/week</div>';
+                html += '<div class="tracker-ai-tip"><i class="fas fa-utensils"></i> Keep fueling with calorie-dense, nutrient-rich meals</div>';
+              }
+              html += '</div>';
+            } else {
+              // Determine severity
+              var wrongDirection = losing ? (weeklyRate > 0.01) : (weeklyRate < -0.01);
+              var stalled = Math.abs(weeklyRate) < 0.05;
+
+              if (wrongDirection) {
+                html += '<div class="tracker-ai-status behind"><i class="fas fa-exclamation-circle"></i> Heading the wrong direction</div>';
+                html += '<div class="tracker-ai-body">You\'re currently <strong>' + (losing ? 'gaining' : 'losing') + ' ' + absWeeklyRate.toFixed(1) + ' lbs/week</strong> — you need to be ' + (losing ? 'losing' : 'gaining') + ' <strong>' + absNeededPerWeek.toFixed(1) + ' lbs/week</strong> to reach ' + goalWeight + ' lbs by ' + targetDateStr + '.</div>';
+              } else if (stalled) {
+                html += '<div class="tracker-ai-status behind"><i class="fas fa-pause-circle"></i> Progress has stalled</div>';
+                html += '<div class="tracker-ai-body">Your weight has been flat recently. To reach <strong>' + goalWeight + ' lbs</strong> by ' + targetDateStr + ', you need to ' + direction + ' about <strong>' + absNeededPerWeek.toFixed(1) + ' lbs/week</strong>.</div>';
+              } else {
+                html += '<div class="tracker-ai-status behind"><i class="fas fa-exclamation-triangle"></i> Behind pace</div>';
+                html += '<div class="tracker-ai-body">You\'re ' + (losing ? 'losing' : 'gaining') + ' <strong>' + absWeeklyRate.toFixed(1) + ' lbs/week</strong> but need <strong>' + absNeededPerWeek.toFixed(1) + ' lbs/week</strong> to hit your goal by ' + targetDateStr + '.';
+                if (projectedStr) html += ' At your current pace, you\'d reach ' + goalWeight + ' lbs by <strong>' + projectedStr + '</strong>.';
+                html += '</div>';
+              }
+
+              // Specific tips based on situation
+              html += '<div class="tracker-ai-tips">';
+              html += '<div class="tracker-ai-tip-header"><i class="fas fa-lightbulb"></i> Action plan:</div>';
+              if (losing) {
+                if (wrongDirection || stalled) {
+                  html += '<div class="tracker-ai-tip"><i class="fas fa-utensils"></i> Track everything you eat for the next 7 days — hidden calories add up fast</div>';
+                  html += '<div class="tracker-ai-tip"><i class="fas fa-ban"></i> Cut liquid calories: sodas, juices, alcohol, fancy coffees</div>';
+                }
+                var waterOz = Math.round(currentW / 2);
+                html += '<div class="tracker-ai-tip"><i class="fas fa-droplet"></i> Drink at least <strong>' + waterOz + ' oz</strong> of water daily (half your bodyweight)</div>';
+                html += '<div class="tracker-ai-tip"><i class="fas fa-drumstick-bite"></i> Aim for <strong>' + Math.round(currentW * 0.8) + '-' + Math.round(currentW) + 'g protein</strong> per day to preserve muscle while losing fat</div>';
+                html += '<div class="tracker-ai-tip"><i class="fas fa-dumbbell"></i> Hit at least <strong>' + ((profile && profile.weeklyGoal) || 4) + ' classes this week</strong> — even on days you don\'t feel like it</div>';
+                html += '<div class="tracker-ai-tip"><i class="fas fa-moon"></i> Get 7-9 hours of sleep — poor sleep increases hunger hormones by up to 30%</div>';
+                if (wrongDirection) {
+                  html += '<div class="tracker-ai-tip"><i class="fas fa-calendar-check"></i> Meal prep on Sunday — people who prep meals are 3x more likely to stay on track</div>';
+                }
+              } else {
+                if (wrongDirection || stalled) {
+                  html += '<div class="tracker-ai-tip"><i class="fas fa-utensils"></i> You may not be eating enough — add 300-500 calories/day to your current intake</div>';
+                }
+                html += '<div class="tracker-ai-tip"><i class="fas fa-drumstick-bite"></i> Aim for <strong>' + Math.round(currentW * 1) + '-' + Math.round(currentW * 1.2) + 'g protein</strong> per day to build lean mass</div>';
+                html += '<div class="tracker-ai-tip"><i class="fas fa-bread-slice"></i> Add calorie-dense foods: nuts, avocados, olive oil, rice, and whole milk</div>';
+                html += '<div class="tracker-ai-tip"><i class="fas fa-dumbbell"></i> Prioritize heavy compound lifts — squats, deadlifts, presses</div>';
+                html += '<div class="tracker-ai-tip"><i class="fas fa-clock"></i> Eat every 3-4 hours — don\'t skip meals</div>';
               }
               html += '</div>';
             }
