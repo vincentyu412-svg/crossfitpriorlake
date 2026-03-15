@@ -50,6 +50,15 @@
             <label>Last Name<input type="text" id="tsLastName" required></label>
           </div>
           <label>Phone<input type="tel" id="tsPhone" required></label>
+          <label>Weekly Goal (classes per week)
+            <select id="tsGoal">
+              <option value="3">3 classes</option>
+              <option value="4" selected>4 classes</option>
+              <option value="5">5 classes</option>
+              <option value="6">6 classes</option>
+              <option value="7">7 classes</option>
+            </select>
+          </label>
           <button type="submit" class="tracker-btn-primary"><i class="fas fa-check"></i> Start Tracking</button>
         </form>
       </div>
@@ -58,22 +67,70 @@
       <div class="tracker-main" id="trackerMain" style="display:none;">
         <div class="tracker-welcome" id="trackerWelcome"></div>
 
-        <!-- Weekly attendance -->
+        <!-- Stats dashboard -->
+        <div class="tracker-stats-row">
+          <div class="tracker-stat-box">
+            <div class="tracker-stat-value" id="statTotal">0</div>
+            <div class="tracker-stat-label">Total Check-ins</div>
+          </div>
+          <div class="tracker-stat-box accent">
+            <div class="tracker-stat-value" id="statStreak">0</div>
+            <div class="tracker-stat-label">Day Streak <i class="fas fa-fire"></i></div>
+          </div>
+          <div class="tracker-stat-box">
+            <div class="tracker-stat-value" id="statBest">0</div>
+            <div class="tracker-stat-label">Best Streak</div>
+          </div>
+        </div>
+
+        <!-- Weekly attendance with goal ring -->
         <div class="tracker-card">
           <div class="tracker-card-header">
-            <h3><i class="fas fa-calendar-check"></i> This Week's Attendance</h3>
+            <h3><i class="fas fa-calendar-check"></i> This Week</h3>
+            <button class="tracker-btn-small" onclick="changeGoal()"><i class="fas fa-sliders"></i> Goal</button>
           </div>
-          <div class="tracker-attendance">
+          <div class="tracker-week-visual">
+            <div class="tracker-ring-wrap">
+              <svg class="tracker-ring" viewBox="0 0 100 100">
+                <circle class="tracker-ring-bg" cx="50" cy="50" r="42" fill="none" stroke-width="8"/>
+                <circle class="tracker-ring-fill" id="trackerRing" cx="50" cy="50" r="42" fill="none" stroke-width="8" stroke-linecap="round" stroke-dasharray="263.89" stroke-dashoffset="263.89" transform="rotate(-90 50 50)"/>
+              </svg>
+              <div class="tracker-ring-label">
+                <span class="tracker-ring-num" id="trackerWeekCount">0</span>
+                <span class="tracker-ring-goal">/ <span id="trackerGoalDisplay">4</span></span>
+              </div>
+            </div>
             <div class="tracker-week-dots" id="trackerWeekDots"></div>
-            <div class="tracker-week-count"><span id="trackerWeekCount">0</span> / 7 classes</div>
           </div>
           <button class="tracker-btn-checkin" id="trackerCheckinBtn" onclick="logCheckin()"><i class="fas fa-plus"></i> Check In Today</button>
+        </div>
+
+        <!-- Weight trend -->
+        <div class="tracker-card" id="trackerWeightCard" style="display:none;">
+          <div class="tracker-card-header">
+            <h3><i class="fas fa-weight-scale"></i> Weight Trend</h3>
+          </div>
+          <div class="tracker-weight-trend">
+            <div class="tracker-weight-stat">
+              <span class="tracker-weight-label">Start</span>
+              <span class="tracker-weight-value" id="wtStart">—</span>
+            </div>
+            <div class="tracker-weight-arrow"><i class="fas fa-arrow-right"></i></div>
+            <div class="tracker-weight-stat">
+              <span class="tracker-weight-label">Current</span>
+              <span class="tracker-weight-value" id="wtCurrent">—</span>
+            </div>
+            <div class="tracker-weight-stat change">
+              <span class="tracker-weight-label">Change</span>
+              <span class="tracker-weight-value" id="wtChange">—</span>
+            </div>
+          </div>
         </div>
 
         <!-- Log weight & mood -->
         <div class="tracker-card">
           <div class="tracker-card-header">
-            <h3><i class="fas fa-weight-scale"></i> Log Progress</h3>
+            <h3><i class="fas fa-pen"></i> Log Progress</h3>
           </div>
           <form class="tracker-log-form" id="trackerLogForm">
             <div class="refer-name-row">
@@ -118,7 +175,8 @@
         profile = {
           firstName: document.getElementById('tsFirstName').value.trim(),
           lastName: document.getElementById('tsLastName').value.trim(),
-          phone: document.getElementById('tsPhone').value.trim()
+          phone: document.getElementById('tsPhone').value.trim(),
+          weeklyGoal: parseInt(document.getElementById('tsGoal').value) || 4
         };
         localStorage.setItem('cfpl_tracker_profile', JSON.stringify(profile));
         showTracker(profile);
@@ -134,17 +192,79 @@
         localStorage.setItem('cfpl_tracker_entries', JSON.stringify(entries));
         document.getElementById('tlWeight').value = '';
         document.getElementById('tlMood').value = '';
-        renderHistory();
+        renderAll();
       });
 
       function showTracker(p) {
         document.getElementById('trackerSetup').style.display = 'none';
         document.getElementById('trackerMain').style.display = 'block';
         document.getElementById('trackerWelcome').textContent = 'Hey ' + p.firstName + '! Keep showing up.';
+        document.getElementById('trackerGoalDisplay').textContent = p.weeklyGoal || 4;
+        renderAll();
+      }
+
+      function renderAll() {
+        renderStats();
         renderWeek();
+        renderWeightTrend();
         renderHistory();
       }
 
+      /* --- Stats --- */
+      function renderStats() {
+        var totalCheckins = entries.filter(function(e) { return e.type === 'checkin'; }).length;
+        document.getElementById('statTotal').textContent = totalCheckins;
+
+        var streaks = calcStreaks();
+        document.getElementById('statStreak').textContent = streaks.current;
+        document.getElementById('statBest').textContent = streaks.best;
+      }
+
+      function calcStreaks() {
+        var checkins = entries.filter(function(e) { return e.type === 'checkin'; });
+        if (checkins.length === 0) return { current: 0, best: 0 };
+
+        // Get unique check-in dates as YYYY-MM-DD
+        var dateSet = {};
+        checkins.forEach(function(c) {
+          var d = new Date(c.date);
+          dateSet[d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0')] = true;
+        });
+        var dates = Object.keys(dateSet).sort().reverse();
+
+        // Current streak — must include today or yesterday
+        var today = new Date(); today.setHours(0,0,0,0);
+        var yesterday = new Date(today); yesterday.setDate(yesterday.getDate() - 1);
+        var todayStr = today.getFullYear() + '-' + String(today.getMonth()+1).padStart(2,'0') + '-' + String(today.getDate()).padStart(2,'0');
+        var yestStr = yesterday.getFullYear() + '-' + String(yesterday.getMonth()+1).padStart(2,'0') + '-' + String(yesterday.getDate()).padStart(2,'0');
+
+        var current = 0;
+        if (dateSet[todayStr] || dateSet[yestStr]) {
+          var startStr = dateSet[todayStr] ? todayStr : yestStr;
+          var d = new Date(startStr + 'T00:00:00');
+          while (true) {
+            var key = d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
+            if (!dateSet[key]) break;
+            current++;
+            d.setDate(d.getDate() - 1);
+          }
+        }
+
+        // Best streak
+        var allSorted = Object.keys(dateSet).sort();
+        var best = 1, run = 1;
+        for (var i = 1; i < allSorted.length; i++) {
+          var prev = new Date(allSorted[i-1] + 'T00:00:00');
+          var curr = new Date(allSorted[i] + 'T00:00:00');
+          if (curr - prev === 86400000) { run++; } else { run = 1; }
+          if (run > best) best = run;
+        }
+        if (allSorted.length === 0) best = 0;
+
+        return { current: current, best: best };
+      }
+
+      /* --- Week + Ring --- */
       function getWeekStart() {
         var d = new Date(); d.setHours(0,0,0,0);
         var day = d.getDay(); var diff = day === 0 ? 6 : day - 1;
@@ -172,6 +292,13 @@
         }
         document.getElementById('trackerWeekCount').textContent = count;
 
+        // Update ring
+        var goal = (profile && profile.weeklyGoal) || 4;
+        var pct = Math.min(count / goal, 1);
+        var circumference = 2 * Math.PI * 42; // ~263.89
+        document.getElementById('trackerRing').style.strokeDashoffset = circumference * (1 - pct);
+
+        // Check-in button state
         var today = new Date(); today.setHours(0,0,0,0);
         var alreadyCheckedIn = checkins.some(function(c) {
           var cd = new Date(c.date); cd.setHours(0,0,0,0);
@@ -182,20 +309,41 @@
           btn.disabled = true;
           btn.innerHTML = '<i class="fas fa-check"></i> Checked In Today';
           btn.classList.add('checked');
+        } else {
+          btn.disabled = false;
+          btn.innerHTML = '<i class="fas fa-plus"></i> Check In Today';
+          btn.classList.remove('checked');
         }
+      }
+
+      /* --- Weight Trend --- */
+      function renderWeightTrend() {
+        var logs = entries.filter(function(e) { return e.type === 'log' && e.weight; });
+        var card = document.getElementById('trackerWeightCard');
+        if (logs.length === 0) { card.style.display = 'none'; return; }
+        card.style.display = '';
+
+        var first = logs[0].weight;
+        var last = logs[logs.length - 1].weight;
+        var diff = last - first;
+        document.getElementById('wtStart').textContent = first + ' lbs';
+        document.getElementById('wtCurrent').textContent = last + ' lbs';
+        var changeEl = document.getElementById('wtChange');
+        var sign = diff > 0 ? '+' : '';
+        changeEl.textContent = sign + diff.toFixed(1) + ' lbs';
+        changeEl.className = 'tracker-weight-value ' + (diff < 0 ? 'down' : diff > 0 ? 'up' : '');
       }
 
       window.logCheckin = function() {
         var entry = { type: 'checkin', date: new Date().toISOString() };
         entries.push(entry);
         localStorage.setItem('cfpl_tracker_entries', JSON.stringify(entries));
-        renderWeek();
-        renderHistory();
+        renderAll();
       };
 
       function renderHistory() {
         var container = document.getElementById('trackerHistory');
-        var sorted = entries.slice().reverse().slice(0, 20);
+        var sorted = entries.slice().reverse().slice(0, 50);
         if (sorted.length === 0) {
           container.innerHTML = '<p class="tracker-empty">No entries yet — start logging!</p>';
           return;
@@ -216,12 +364,23 @@
         container.innerHTML = html;
       }
 
+      window.changeGoal = function() {
+        var current = (profile && profile.weeklyGoal) || 4;
+        var val = prompt('Set your weekly class goal (3–7):', current);
+        if (!val) return;
+        val = parseInt(val);
+        if (val < 3 || val > 7 || isNaN(val)) { alert('Please enter a number between 3 and 7.'); return; }
+        profile.weeklyGoal = val;
+        localStorage.setItem('cfpl_tracker_profile', JSON.stringify(profile));
+        document.getElementById('trackerGoalDisplay').textContent = val;
+        renderWeek();
+      };
+
       window.clearHistory = function() {
         if (!confirm('Clear all your tracker history? This cannot be undone.')) return;
         entries = [];
         localStorage.removeItem('cfpl_tracker_entries');
-        renderWeek();
-        renderHistory();
+        renderAll();
       };
     })();
   </script>

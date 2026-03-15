@@ -2572,39 +2572,6 @@ h3 { font-size: 1.5rem; }
   flex-shrink: 0;
 }
 
-.challenge-banner {
-  display: block;
-  width: 100%;
-  max-width: 1100px;
-  margin: 0 0 10px;
-  padding: 10px 20px;
-  border-radius: 10px;
-  background: linear-gradient(135deg, #1a1a2e 0%, #7c3aed 100%);
-  cursor: pointer;
-  position: relative;
-  overflow: hidden;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
-  text-decoration: none;
-}
-
-.challenge-banner:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 12px 40px rgba(124, 58, 237, 0.3);
-}
-
-.challenge-banner-icon {
-  width: 32px;
-  height: 32px;
-  border-radius: 8px;
-  background: rgba(255, 255, 255, 0.2);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 0.9rem;
-  color: #fbbf24;
-  flex-shrink: 0;
-}
-
 .tracker-back {
   font-family: var(--font-display);
   font-size: 0.82rem;
@@ -2620,22 +2587,8 @@ h3 { font-size: 1.5rem; }
 
 .tracker-back:hover { color: var(--blue-dark); }
 
-.challenge-checkin-note {
-  font-family: var(--font-body);
-  font-size: 0.75rem;
-  color: #999;
-  text-align: center;
-  margin-top: 12px;
-}
-
-.challenge-checkin-note a {
-  color: var(--blue);
-  text-decoration: underline;
-}
-
 /* ── Goal & Accountability Tracker ── */
-.tracker-section,
-.challenge-section {
+.tracker-section {
   width: 100%;
   max-width: 1100px;
   margin: 48px auto 0;
@@ -2683,6 +2636,22 @@ h3 { font-size: 1.5rem; }
 }
 
 .tracker-setup-form input:focus {
+  outline: none;
+  border-color: var(--blue);
+  box-shadow: 0 0 0 3px rgba(58, 123, 213, 0.12);
+}
+
+.tracker-setup-form select {
+  padding: 10px 12px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  font-family: var(--font-body);
+  font-size: 0.88rem;
+  background: #fff;
+  transition: border-color 0.2s ease;
+}
+
+.tracker-setup-form select:focus {
   outline: none;
   border-color: var(--blue);
   box-shadow: 0 0 0 3px rgba(58, 123, 213, 0.12);
@@ -2763,12 +2732,53 @@ h3 { font-size: 1.5rem; }
 .tracker-btn-small:hover { color: #dc2626; border-color: #dc2626; }
 
 /* Attendance dots */
-.tracker-attendance { margin-bottom: 16px; }
+
+.tracker-week-visual {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  margin-bottom: 16px;
+}
+
+.tracker-ring-wrap {
+  position: relative;
+  width: 80px;
+  height: 80px;
+  flex-shrink: 0;
+}
+
+.tracker-ring { width: 100%; height: 100%; }
+.tracker-ring-bg { stroke: #e5e7eb; }
+.tracker-ring-fill { stroke: #16a34a; transition: stroke-dashoffset 0.6s ease; }
+
+.tracker-ring-label {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.tracker-ring-num {
+  font-family: var(--font-display);
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: var(--dark);
+  line-height: 1;
+}
+
+.tracker-ring-goal {
+  font-family: var(--font-display);
+  font-size: 0.65rem;
+  font-weight: 600;
+  color: #999;
+}
 
 .tracker-week-dots {
   display: flex;
-  gap: 8px;
-  margin-bottom: 8px;
+  flex: 1;
+  gap: 6px;
 }
 
 .tracker-dot {
@@ -2799,12 +2809,90 @@ h3 { font-size: 1.5rem; }
 
 .tracker-dot.filled span { color: #fff; }
 
-.tracker-week-count {
-  font-family: var(--font-display);
-  font-size: 0.82rem;
-  font-weight: 600;
-  color: #666;
+/* Stats dashboard */
+.tracker-stats-row {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.tracker-stat-box {
+  background: #f9fafb;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 16px 10px;
   text-align: center;
+}
+
+.tracker-stat-box.accent {
+  background: linear-gradient(135deg, #fef3c7, #fde68a);
+  border-color: #f59e0b;
+}
+
+.tracker-stat-value {
+  font-family: var(--font-display);
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: var(--dark);
+  line-height: 1;
+  margin-bottom: 4px;
+}
+
+.tracker-stat-box.accent .tracker-stat-value { color: #92400e; }
+
+.tracker-stat-label {
+  font-family: var(--font-display);
+  font-size: 0.65rem;
+  font-weight: 600;
+  color: #999;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.tracker-stat-box.accent .tracker-stat-label { color: #92400e; }
+
+/* Weight trend */
+.tracker-weight-trend {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  padding: 8px 0;
+}
+
+.tracker-weight-stat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.tracker-weight-stat.change { margin-left: auto; }
+
+.tracker-weight-label {
+  font-family: var(--font-display);
+  font-size: 0.62rem;
+  font-weight: 600;
+  color: #999;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 2px;
+}
+
+.tracker-weight-value {
+  font-family: var(--font-display);
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--dark);
+}
+
+.tracker-weight-value.down { color: #16a34a; }
+.tracker-weight-value.up { color: #ef4444; }
+
+.tracker-weight-arrow {
+  color: #ccc;
+  font-size: 0.8rem;
 }
 
 .tracker-btn-checkin {
@@ -2909,90 +2997,6 @@ h3 { font-size: 1.5rem; }
   color: #aaa;
   text-align: center;
   padding: 20px 0;
-}
-
-/* ── Monthly Challenge Board ── */
-.challenge-section { margin-top: 40px; }
-
-.challenge-card {
-  background: linear-gradient(135deg, #1a1a2e 0%, #2d1b4e 50%, #1a1a2e 100%);
-  border-radius: 16px;
-  padding: 28px;
-  color: #fff;
-}
-
-.challenge-month {
-  font-family: var(--font-display);
-  font-size: 0.72rem;
-  font-weight: 700;
-  color: #a78bfa;
-  text-transform: uppercase;
-  letter-spacing: 2px;
-  margin-bottom: 8px;
-}
-
-.challenge-title {
-  font-family: var(--font-display);
-  font-size: 1.4rem;
-  font-weight: 700;
-  margin: 0 0 8px;
-}
-
-.challenge-desc {
-  font-family: var(--font-body);
-  font-size: 0.85rem;
-  color: rgba(255,255,255,0.7);
-  margin: 0 0 24px;
-  line-height: 1.5;
-}
-
-.challenge-progress-wrap { margin-bottom: 24px; }
-
-.challenge-progress-bar {
-  width: 100%;
-  height: 12px;
-  background: rgba(255,255,255,0.1);
-  border-radius: 6px;
-  overflow: hidden;
-  margin-bottom: 8px;
-}
-
-.challenge-progress-fill {
-  height: 100%;
-  width: 0%;
-  background: linear-gradient(90deg, #a78bfa, #f472b6);
-  border-radius: 6px;
-  transition: width 0.5s ease;
-}
-
-.challenge-progress-label {
-  font-family: var(--font-display);
-  font-size: 0.82rem;
-  font-weight: 600;
-  color: rgba(255,255,255,0.8);
-}
-
-.challenge-tiers { display: flex; flex-direction: column; gap: 8px; }
-
-.challenge-tier {
-  font-family: var(--font-body);
-  font-size: 0.8rem;
-  color: rgba(255,255,255,0.4);
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 8px 12px;
-  border-radius: 8px;
-  background: rgba(255,255,255,0.04);
-  transition: all 0.3s ease;
-}
-
-.challenge-tier i { font-size: 0.75rem; }
-
-.challenge-tier.reached {
-  color: #fff;
-  background: rgba(167, 139, 250, 0.2);
-  border-left: 3px solid #a78bfa;
 }
 
 .members-area-footer {
@@ -4521,8 +4525,7 @@ h3 { font-size: 1.5rem; }
   .nutrition-cards-vertical { grid-template-columns: 1fr; }
   .refer-banner,
   .nk-banner,
-  .tracker-banner,
-  .challenge-banner { padding: 10px 16px; }
+  .tracker-banner { padding: 10px 16px; }
   .refer-banner-text,
   .nk-banner-text { flex-direction: column; gap: 2px; }
   .refer-banner-text h2,
@@ -4579,10 +4582,13 @@ h3 { font-size: 1.5rem; }
   .tracker-card { padding: 16px; }
   .tracker-dot { height: 34px; }
   .tracker-dot span { font-size: 0.55rem; }
-  .challenge-card { padding: 20px; }
-  .challenge-title { font-size: 1.15rem; }
-  .challenge-desc { font-size: 0.78rem; }
-  .challenge-tier { font-size: 0.72rem; padding: 6px 10px; }
+  .tracker-stats-row { gap: 8px; }
+  .tracker-stat-value { font-size: 1.3rem; }
+  .tracker-stat-box { padding: 12px 8px; }
+  .tracker-ring-wrap { width: 64px; height: 64px; }
+  .tracker-ring-num { font-size: 1.1rem; }
+  .tracker-weight-trend { gap: 10px; }
+  .tracker-weight-value { font-size: 0.95rem; }
   .nutrition-cards { grid-template-columns: 1fr; }
   .nutrition-kickstart { margin-top: 40px; }
   .nutrition-card { padding: 24px 20px; }
@@ -4599,8 +4605,7 @@ h3 { font-size: 1.5rem; }
   .nutrition-progression-hands { grid-template-columns: repeat(2, 1fr); }
   .refer-banner,
   .nk-banner,
-  .tracker-banner,
-  .challenge-banner { padding: 10px 14px; border-radius: 10px; }
+  .tracker-banner { padding: 10px 14px; border-radius: 10px; }
   .refer-banner-text,
   .nk-banner-text { flex-direction: column; gap: 2px; }
   .refer-banner-text h2,
@@ -4611,8 +4616,7 @@ h3 { font-size: 1.5rem; }
   .nk-banner-content { gap: 10px; }
   .refer-banner-icon,
   .nk-banner-icon,
-  .tracker-banner-icon,
-  .challenge-banner-icon { width: 28px; height: 28px; font-size: 0.8rem; }
+  .tracker-banner-icon { width: 28px; height: 28px; font-size: 0.8rem; }
   .refer-banner-arrow,
   .nk-banner-arrow { width: 26px; height: 26px; font-size: 0.65rem; }
 
