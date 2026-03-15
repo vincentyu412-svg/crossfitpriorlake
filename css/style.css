@@ -2335,7 +2335,7 @@ h3 { font-size: 1.5rem; }
   display: block;
   width: 100%;
   max-width: 1100px;
-  margin: 0 0 10px;
+  margin: 0 0 16px;
   padding: 10px 20px;
   border-radius: 10px;
   background: linear-gradient(135deg, #92400e 0%, #d97706 50%, #f59e0b 100%);
@@ -2636,7 +2636,7 @@ h3 { font-size: 1.5rem; }
   display: block;
   width: 100%;
   max-width: 1100px;
-  margin: 0 0 10px;
+  margin: 0 0 16px;
   padding: 10px 20px;
   border-radius: 10px;
   background: linear-gradient(135deg, #065f46 0%, #10b981 100%);
@@ -3803,7 +3803,7 @@ h3 { font-size: 1.5rem; }
   display: block;
   width: 100%;
   max-width: 1100px;
-  margin: 0 0 24px;
+  margin: 0 0 16px;
   padding: 10px 20px;
   border-radius: 10px;
   background: linear-gradient(135deg, #1a1a2e 0%, #2d62b3 100%);
