@@ -271,6 +271,25 @@
     </div>
   </div>
 
+  <!-- Check-in Popup -->
+  <div class="checkin-overlay" id="checkinOverlay" style="display:none;" onclick="if(event.target===this)closeCheckinPopup()">
+    <div class="checkin-popup">
+      <div class="checkin-popup-header">
+        <h3><i class="fas fa-clipboard-check"></i> Check In</h3>
+        <button class="checkin-popup-close" onclick="closeCheckinPopup()"><i class="fas fa-times"></i></button>
+      </div>
+      <div class="checkin-popup-body">
+        <label class="checkin-popup-label">Weight (lbs) <span class="checkin-required">*</span></label>
+        <input type="number" id="checkinWeight" class="checkin-popup-input" step="0.1" min="50" max="500" placeholder="e.g. 175" required>
+        <label class="checkin-popup-label">How are you feeling? <span class="checkin-optional">(optional)</span></label>
+        <textarea id="checkinNotes" class="checkin-popup-textarea" rows="3" maxlength="300" placeholder="Tired, sore, energized, stressed, great..."></textarea>
+      </div>
+      <div class="checkin-popup-actions">
+        <button class="tracker-btn-primary checkin-popup-submit" onclick="submitCheckin()"><i class="fas fa-check"></i> Check In</button>
+      </div>
+    </div>
+  </div>
+
   <!-- Confetti canvas -->
   <canvas id="confettiCanvas" style="position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:9999;"></canvas>
 
@@ -956,13 +975,122 @@
           }
         }
 
+        // Weekly Mood Summary from check-in notes
+        var weekMoodHtml = buildMoodSummary();
+        if (weekMoodHtml) html += weekMoodHtml;
+
         panel.innerHTML = html;
       }
 
+      function buildMoodSummary() {
+        var now = new Date();
+        var weekAgo = new Date(now.getTime() - 7 * 86400000);
+        var weekNotes = [];
+        for (var i = 0; i < entries.length; i++) {
+          var e = entries[i];
+          if (e.type === 'checkin' && e.notes && new Date(e.date) >= weekAgo) {
+            weekNotes.push(e.notes.toLowerCase());
+          }
+        }
+        if (weekNotes.length === 0) return '';
+
+        // Keyword categories
+        var moods = {
+          tired: { words: ['tired', 'exhausted', 'fatigued', 'drained', 'sleepy', 'low energy'], count: 0 },
+          sore: { words: ['sore', 'aching', 'tight', 'stiff', 'pain'], count: 0 },
+          stressed: { words: ['stressed', 'anxious', 'overwhelmed', 'worried', 'tense'], count: 0 },
+          great: { words: ['great', 'amazing', 'awesome', 'fantastic', 'excellent', 'strong', 'powerful', 'energized', 'motivated', 'pumped', 'good', 'happy'], count: 0 },
+          sick: { words: ['sick', 'ill', 'nauseous', 'headache', 'fever', 'cold'], count: 0 }
+        };
+
+        var allText = weekNotes.join(' ');
+        for (var key in moods) {
+          for (var w = 0; w < moods[key].words.length; w++) {
+            if (allText.indexOf(moods[key].words[w]) !== -1) {
+              moods[key].count++;
+            }
+          }
+        }
+
+        var html = '<div class="tracker-ai-mood">';
+        html += '<div class="tracker-ai-mood-header"><i class="fas fa-heart-pulse"></i> Weekly Mood Check (' + weekNotes.length + ' note' + (weekNotes.length > 1 ? 's' : '') + ')</div>';
+        html += '<div class="tracker-ai-mood-body">';
+
+        var summaryParts = [];
+        var advice = [];
+
+        if (moods.great.count > 0) {
+          summaryParts.push('feeling <strong>great</strong>');
+        }
+        if (moods.tired.count > 0) {
+          summaryParts.push('feeling <strong>tired</strong>');
+          advice.push('<i class="fas fa-moon"></i> You mentioned fatigue — aim for 7-9 hours of sleep and check your hydration');
+        }
+        if (moods.sore.count > 0) {
+          summaryParts.push('feeling <strong>sore</strong>');
+          advice.push('<i class="fas fa-spa"></i> Soreness detected — prioritize stretching, foam rolling, and add a recovery day if needed');
+        }
+        if (moods.stressed.count > 0) {
+          summaryParts.push('feeling <strong>stressed</strong>');
+          advice.push('<i class="fas fa-brain"></i> Stress can stall progress — try a 10-minute walk, deep breathing, or journaling before bed');
+        }
+        if (moods.sick.count > 0) {
+          summaryParts.push('not feeling well');
+          advice.push('<i class="fas fa-pills"></i> Listen to your body — rest up, stay hydrated, and ease back in when you\'re ready');
+        }
+
+        if (summaryParts.length === 0) {
+          html += 'You logged ' + weekNotes.length + ' mood note' + (weekNotes.length > 1 ? 's' : '') + ' this week. Keep noting how you feel — it helps the AI give better advice!';
+        } else {
+          html += 'This week you mentioned ' + summaryParts.join(', ') + '. ';
+          if (moods.great.count > 0 && advice.length === 0) {
+            html += 'You\'re in a great headspace — ride that momentum and keep pushing!';
+          } else if (moods.great.count > 0 && advice.length > 0) {
+            html += 'Mostly positive, but here\'s what to watch:';
+          }
+        }
+        html += '</div>';
+
+        if (advice.length > 0) {
+          html += '<div class="tracker-ai-tips" style="margin-top:8px;">';
+          for (var a = 0; a < advice.length; a++) {
+            html += '<div class="tracker-ai-tip">' + advice[a] + '</div>';
+          }
+          html += '</div>';
+        }
+
+        html += '</div>';
+        return html;
+      }
+
       window.logCheckin = function() {
-        var entry = { type: 'checkin', date: new Date().toISOString() };
-        entries.push(entry);
+        document.getElementById('checkinWeight').value = '';
+        document.getElementById('checkinNotes').value = '';
+        document.getElementById('checkinOverlay').style.display = 'flex';
+        document.getElementById('checkinWeight').focus();
+      };
+
+      window.closeCheckinPopup = function() {
+        document.getElementById('checkinOverlay').style.display = 'none';
+      };
+
+      window.submitCheckin = function() {
+        var w = parseFloat(document.getElementById('checkinWeight').value);
+        if (!w || w < 50 || w > 500) {
+          document.getElementById('checkinWeight').focus();
+          return;
+        }
+        var notes = document.getElementById('checkinNotes').value.trim() || null;
+        var now = new Date();
+        // Check-in entry with weight and optional notes
+        var checkinEntry = { type: 'checkin', date: now.toISOString(), weight: w, notes: notes };
+        entries.push(checkinEntry);
+        // Also add a weight log so the chart picks it up
+        var logEntry = { type: 'log', date: now.toISOString(), weight: w };
+        entries.push(logEntry);
+        entries.sort(function(a, b) { return new Date(a.date) - new Date(b.date); });
         saveData();
+        document.getElementById('checkinOverlay').style.display = 'none';
         renderAll();
       };
 
