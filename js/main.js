@@ -498,7 +498,7 @@ document.querySelectorAll('a[href^="#"]').forEach(anchor => {
       fetch('https://services.leadconnectorhq.com/hooks/QU0KfW1QodK79UH6fB31/webhook-trigger/wRUCSolpWZIqgTKyMX0G', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        mode: 'no-cors',
+        mode: 'cors',
         body: JSON.stringify(data)
       }).then(function() {
         window.location.href = 'schedule.html';
