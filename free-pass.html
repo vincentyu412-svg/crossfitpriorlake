@@ -125,95 +125,11 @@
       box-shadow: 0 8px 40px rgba(0, 0, 0, 0.4);
     }
 
-    .card-header {
-      display: flex;
-      align-items: center;
-      gap: 14px;
-      padding: 20px 24px;
-      border-bottom: 1px solid #eee;
-    }
-
-    .card-header img {
-      width: 48px;
-      height: 48px;
-      border-radius: 50%;
-      object-fit: cover;
-    }
-
-    .card-header h2 {
-      font-family: var(--font-display);
-      font-size: 1.35rem;
-      font-weight: 700;
-      color: var(--dark);
-      text-transform: none;
-      letter-spacing: 0;
-    }
-
-    .card-body {
-      padding: 24px;
-    }
-
-    .detail-row {
-      display: flex;
-      align-items: flex-start;
-      gap: 12px;
-      margin-bottom: 14px;
-      color: #555;
-      font-size: 0.95rem;
-    }
-
-    .detail-row .icon {
-      width: 20px;
-      text-align: center;
-      flex-shrink: 0;
-      color: #999;
-      margin-top: 2px;
-    }
-
-    .detail-row:last-child {
-      margin-bottom: 0;
-    }
-
-    .description {
-      color: #333;
-      font-size: 0.92rem;
-      line-height: 1.7;
-      margin-top: 6px;
-    }
-
-    /* CTA */
-    .cta-section {
-      text-align: center;
-      margin: 32px auto 0;
-      max-width: 520px;
-      width: calc(100% - 40px);
-    }
-
-    .cta-btn {
-      display: inline-block;
-      background: var(--primary);
-      color: var(--white);
-      font-family: var(--font-display);
-      font-weight: 700;
-      font-size: 1.1rem;
-      text-transform: uppercase;
-      letter-spacing: 1.5px;
-      padding: 16px 40px;
-      border-radius: 50px;
-      text-decoration: none;
-      transition: background 0.3s ease, transform 0.2s ease;
-      box-shadow: 0 4px 20px rgba(230, 57, 70, 0.4);
-    }
-
-    .cta-btn:hover {
-      background: var(--primary-dark);
-      transform: translateY(-2px);
-    }
-
-    .cta-note {
-      color: #888;
-      font-size: 0.8rem;
-      margin-top: 12px;
+    .booking-card iframe {
+      width: 100%;
+      min-height: 700px;
+      border: none;
+      display: block;
     }
 
     /* Urgency */
@@ -279,36 +195,9 @@
     <span class="badge gold">&#9733; 5.0 on Google</span>
   </div>
 
-  <!-- Booking Card -->
+  <!-- Booking Calendar -->
   <div class="booking-card">
-    <div class="card-header">
-      <img src="images/logo.webp" alt="CrossFit Prior Lake">
-      <h2>FREE 10-Day VIP Pass</h2>
-    </div>
-    <div class="card-body">
-      <div class="detail-row">
-        <span class="icon">&#128337;</span>
-        <span>10 Days of Unlimited Classes</span>
-      </div>
-      <div class="detail-row">
-        <span class="icon">&#128205;</span>
-        <span>17205 Adelmann St SE, Prior Lake, MN 55372</span>
-      </div>
-      <div class="detail-row">
-        <span class="icon">&#128197;</span>
-        <span>Start any day — your 10 days begin on your first visit</span>
-      </div>
-      <div class="detail-row">
-        <span class="icon">&#9776;</span>
-        <span class="description">Hundreds of locals have already transformed their lives with us. Now it's your turn!<br><br>During your first session, you'll experience a coach-led CrossFit class tailored to your fitness level. No experience needed — our coaches will guide you through every movement and make sure you feel welcome from day one.</span>
-      </div>
-    </div>
-  </div>
-
-  <!-- CTA -->
-  <div class="cta-section">
-    <a href="contact.html" class="cta-btn">Claim Your Free Pass &rarr;</a>
-    <p class="cta-note">No credit card required. No strings attached.</p>
+    <iframe src="https://api.leadconnectorhq.com/widget/booking/AyYqM9S3CtqO5BKQiOdG" title="Book Your Free 10-Day VIP Pass" allowfullscreen loading="lazy"></iframe>
   </div>
 
   <!-- Urgency -->
@@ -322,5 +211,6 @@
     <p>&copy; 2026 CrossFit Prior Lake. All rights reserved.</p>
   </footer>
 
+  <script src="https://widgets.leadconnectorhq.com/loader.js" data-resources-url="https://widgets.leadconnectorhq.com/chat-widget/loader.js" data-widget-id="67d07bcbf71a1a4a21e40b2a"></script>
 </body>
 </html>
