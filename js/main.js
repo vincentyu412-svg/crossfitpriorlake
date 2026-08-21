@@ -27,14 +27,17 @@ if (rotateContainer) {
 
 // ===== NAVBAR SCROLL EFFECT =====
 const navbar = document.querySelector('.navbar');
+const affiliateBar = document.getElementById('affiliateBar');
 const mobileStickyBar = document.getElementById('mobileStickyBar');
 const isMobile = () => window.innerWidth <= 768;
 
 window.addEventListener('scroll', () => {
   if (window.scrollY > 50) {
     navbar.classList.add('scrolled');
+    if (affiliateBar) affiliateBar.classList.add('hidden');
   } else {
     navbar.classList.remove('scrolled');
+    if (affiliateBar) affiliateBar.classList.remove('hidden');
   }
 
   // On mobile: hide navbar and show sticky bar after scrolling
