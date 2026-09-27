@@ -5491,7 +5491,11 @@ h3 { font-size: 1.5rem; }
 }
 
 .footer-bottom {
-  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px 24px;
+  flex-wrap: wrap;
   padding-top: 15px;
   border-top: 1px solid rgba(255, 255, 255, 0.05);
 }
@@ -5499,6 +5503,29 @@ h3 { font-size: 1.5rem; }
 .footer-bottom p {
   color: var(--gray);
   font-size: .8rem;
+}
+
+.powered-by {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--gray);
+  font-size: .8rem;
+  transition: var(--transition);
+}
+
+.powered-by img {
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
+}
+
+.powered-by span {
+  font-weight: 600;
+}
+
+.powered-by:hover {
+  color: var(--white);
 }
 
 /* Mobile Sticky Bar */
@@ -5877,6 +5904,7 @@ h3 { font-size: 1.5rem; }
   .footer-compact { flex-direction: column; text-align: center; gap: 16px; }
   .footer-contact { flex-direction: column; gap: 10px; }
   .footer .social-links { justify-content: center; }
+  .footer-bottom { flex-direction: column; text-align: center; }
 
   .navbar { transform: translateY(0); transition: transform .3s ease, padding .3s ease, top .3s ease; }
   .navbar.hide-on-mobile { transform: translateY(-100%); }
