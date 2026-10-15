@@ -1079,3 +1079,46 @@ body.lp {
     order: -1;
   }
 }
+
+/* Thicker bars with moving diagonal stripes on the filled part */
+.lp-panel__head .lp-progress__bar span {
+  height: 22px;
+}
+
+.lp-panel__head .lp-progress__bar span.is-done,
+.lp-panel__head .lp-progress__bar span.is-current::after {
+  background-color: var(--lp-accent);
+  background-image: linear-gradient(
+    135deg,
+    rgb(255 255 255 / 0.28) 25%,
+    transparent 25% 50%,
+    rgb(255 255 255 / 0.28) 50% 75%,
+    transparent 75%
+  );
+  background-size: 28px 28px;
+}
+
+.lp-panel__head .lp-progress__bar span.is-done {
+  animation: lp-progress-stripes 0.9s linear infinite;
+}
+
+.lp-panel__head .lp-progress__bar span.is-current::after {
+  animation:
+    lp-progress-fill 1.2s var(--lp-ease) 0.3s both,
+    lp-progress-stripes 0.9s linear infinite;
+}
+
+@keyframes lp-progress-stripes {
+  to { background-position: 28px 0; }
+}
+
+@media (max-width: 560px) {
+  .lp-panel__head .lp-progress__bar span {
+    height: 18px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .lp-panel__head .lp-progress__bar span.is-done,
+  .lp-panel__head .lp-progress__bar span.is-current::after { animation: none; }
+}
