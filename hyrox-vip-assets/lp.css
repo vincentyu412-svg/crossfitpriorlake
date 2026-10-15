@@ -1011,3 +1011,71 @@ body.lp {
     transition-duration: 0.01ms !important;
   }
 }
+
+/* Bolder progress bar so the "last step" reads at a glance */
+.lp-panel__head .lp-progress {
+  gap: 16px;
+}
+
+.lp-panel__head .lp-progress__bar {
+  gap: 10px;
+}
+
+.lp-panel__head .lp-progress__bar span {
+  height: 14px;
+  background: rgb(255 255 255 / 0.25);
+}
+
+.lp-panel__head .lp-progress__bar span.is-done {
+  box-shadow: 0 0 14px rgb(224 36 44 / 0.6);
+}
+
+.lp-panel__head .lp-progress__bar span.is-current {
+  position: relative;
+  overflow: hidden;
+  background: rgb(255 255 255 / 0.25);
+}
+
+.lp-panel__head .lp-progress__bar span.is-current::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  width: 85%;
+  border-radius: inherit;
+  background: var(--lp-accent);
+  transform-origin: left;
+  animation: lp-progress-fill 1.2s var(--lp-ease) 0.3s both;
+}
+
+@keyframes lp-progress-fill {
+  from { transform: scaleX(0); }
+}
+
+.lp-panel__head .lp-progress__label {
+  padding: 8px 14px;
+  border-radius: 999px;
+  background: var(--lp-accent);
+  font-size: clamp(0.95rem, 1.6vw, 1.1rem);
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .lp-panel__head .lp-progress__bar span.is-current::after { animation: none; }
+}
+
+@media (max-width: 560px) {
+  .lp-panel__head .lp-progress {
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  .lp-panel__head .lp-progress__bar {
+    flex-basis: 100%;
+  }
+
+  .lp-panel__head .lp-progress__label {
+    order: -1;
+  }
+}
